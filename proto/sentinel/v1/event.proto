@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package sentinel.v1;
+
+option go_package = "sentinel/v1";
+
+import "google/protobuf/timestamp.proto";
+
+// Severity represents the severity level of a security event or alert.
+enum Severity {
+  SEVERITY_UNSPECIFIED = 0;
+  SEVERITY_LOW = 1;
+  SEVERITY_MEDIUM = 2;
+  SEVERITY_HIGH = 3;
+  SEVERITY_CRITICAL = 4;
+}
+
+// EventType categorizes security events.
+enum EventType {
+  EVENT_TYPE_UNSPECIFIED = 0;
+  EVENT_TYPE_AUTH_SUCCESS = 1;
+  EVENT_TYPE_AUTH_FAILURE = 2;
+  EVENT_TYPE_PROCESS_START = 3;
+  EVENT_TYPE_PROCESS_STOP = 4;
+  EVENT_TYPE_NETWORK_CONNECT = 5;
+  EVENT_TYPE_NETWORK_LISTEN = 6;
+  EVENT_TYPE_FILE_ACCESS = 7;
+  EVENT_TYPE_FILE_MODIFY = 8;
+  EVENT_TYPE_PRIVILEGE_ESCALATION = 9;
+  EVENT_TYPE_SYSTEM_CALL = 10;
+}
+
+// SecurityEvent represents a single security event collected by an agent.
+message SecurityEvent {
+  // Unique identifier for deduplication (idempotency key).
+  string event_id = 1;
+
+  // Type of the security event.
+  EventType type = 2;
+
+  // When the event occurred on the source system.
+  google.protobuf.Timestamp timestamp = 3;
+
+  // Hostname of the machine that generated the event.
+  string hostname = 4;
+
+  // Source IP address (if applicable).
+  string source_ip = 5;
+
+  // Destination IP address (if applicable).
+  string destination_ip = 6;
+
+  // Source port (if applicable).
+  uint32 source_port = 7;
+
+  // Destination port (if applicable).
+  uint32 destination_port = 8;
+
+  // User associated with the event.
+  string user = 9;
+
+  // Process name or path.
+  string process = 10;
+
+  // Service that generated the event (e.g., sshd, nginx).
+  string service = 11;
+
+  // Raw log line or message.
+  string raw_message = 12;
+
+  // Flexible key-value metadata for enrichment.
+  map<string, string> metadata = 13;
+
+  // Agent that collected this event.
+  string agent_id = 14;
+
+  // Severity assigned at collection time (may be overridden by processor).
+  Severity severity = 15;
+}
+
+// EventBatch groups multiple events for efficient transport.
+message EventBatch {
+  repeated SecurityEvent events = 1;
+
+  // Agent identifier for the batch.
+  string agent_id = 2;
+
+  // Batch sequence number for ordering.
+  uint64 sequence = 3;
+}
