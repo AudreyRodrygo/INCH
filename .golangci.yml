@@ -1,0 +1,86 @@
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  enable:
+    # Bugs
+    - govet
+    - staticcheck
+    - errcheck
+    - bodyclose
+    - durationcheck
+    - nilerr
+    - sqlclosecheck
+
+    # Style
+    - revive
+    - misspell
+    - unconvert
+    - unparam
+    - usestdlibvars
+
+    # Security
+    - gosec
+
+    # Performance
+    - prealloc
+
+    # Complexity
+    - cyclop
+    - gocognit
+
+  settings:
+    revive:
+      rules:
+        - name: blank-imports
+        - name: context-as-argument
+        - name: dot-imports
+        - name: error-return
+        - name: error-strings
+        - name: error-naming
+        - name: exported
+        - name: if-return
+        - name: increment-decrement
+        - name: var-naming
+        - name: range
+        - name: receiver-naming
+        - name: time-naming
+        - name: unexported-return
+        - name: indent-error-flow
+        - name: errorf
+        - name: unnecessary-stmt
+        - name: unreachable-code
+        - name: unused-parameter
+
+    cyclop:
+      max-complexity: 15
+
+    gocognit:
+      min-complexity: 20
+
+    gosec:
+      excludes:
+        - G104
+
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+
+formatters:
+  enable:
+    - gofumpt
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - cyclop
+        - gocognit
+        - errcheck
+
+    - path: cmd/.*/main\.go
+      linters:
+        - cyclop

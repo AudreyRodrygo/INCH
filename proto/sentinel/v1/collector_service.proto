@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package sentinel.v1;
+
+option go_package = "sentinel/v1";
+
+import "sentinel/v1/event.proto";
+
+// CollectorService receives security events from agents.
+service CollectorService {
+  // IngestEvents accepts a batch of security events.
+  rpc IngestEvents(IngestEventsRequest) returns (IngestEventsResponse);
+
+  // StreamEvents opens a bidirectional stream for continuous event ingestion.
+  rpc StreamEvents(stream EventBatch) returns (stream StreamEventsResponse);
+}
+
+message IngestEventsRequest {
+  EventBatch batch = 1;
+}
+
+message IngestEventsResponse {
+  // Number of events accepted.
+  uint32 accepted = 1;
+
+  // Number of events rejected (duplicates or validation failures).
+  uint32 rejected = 2;
+
+  // IDs of rejected events with reasons.
+  repeated RejectedEvent rejected_events = 3;
+}
+
+message RejectedEvent {
+  string event_id = 1;
+  string reason = 2;
+}
+
+message StreamEventsResponse {
+  uint32 accepted = 1;
+  uint32 rejected = 2;
+}

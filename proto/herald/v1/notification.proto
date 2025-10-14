@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package herald.v1;
+
+option go_package = "herald/v1";
+
+import "google/protobuf/timestamp.proto";
+
+// Priority determines SLA for notification delivery.
+enum Priority {
+  PRIORITY_UNSPECIFIED = 0;
+  PRIORITY_LOW = 1;       // Best-effort delivery
+  PRIORITY_NORMAL = 2;    // <60s SLA
+  PRIORITY_HIGH = 3;      // <10s SLA
+  PRIORITY_CRITICAL = 4;  // <1s SLA
+}
+
+// Channel specifies the delivery method.
+enum Channel {
+  CHANNEL_UNSPECIFIED = 0;
+  CHANNEL_EMAIL = 1;
+  CHANNEL_WEBHOOK = 2;
+  CHANNEL_TELEGRAM = 3;
+  CHANNEL_SLACK = 4;
+  CHANNEL_PUSH = 5;
+  CHANNEL_WEBSOCKET = 6;
+}
+
+// DeliveryStatus tracks notification lifecycle.
+enum DeliveryStatus {
+  DELIVERY_STATUS_UNSPECIFIED = 0;
+  DELIVERY_STATUS_PENDING = 1;
+  DELIVERY_STATUS_SENT = 2;
+  DELIVERY_STATUS_DELIVERED = 3;
+  DELIVERY_STATUS_FAILED = 4;
+  DELIVERY_STATUS_DLQ = 5;  // Moved to dead letter queue
+}
+
+// Notification represents a message to be delivered.
+message Notification {
+  // Unique notification identifier.
+  string notification_id = 1;
+
+  // Delivery priority (determines SLA).
+  Priority priority = 2;
+
+  // Target channels for delivery.
+  repeated Channel channels = 3;
+
+  // Recipient identifier (email, user ID, webhook URL, etc.).
+  string recipient = 4;
+
+  // Template ID to use for rendering.
+  string template_id = 5;
+
+  // Template variables.
+  map<string, string> variables = 6;
+
+  // Pre-rendered subject (if not using template).
+  string subject = 7;
+
+  // Pre-rendered body (if not using template).
+  string body = 8;
+
+  // Source system (e.g., "sentinel").
+  string source = 9;
+
+  // Deduplication key (optional).
+  string dedup_key = 10;
+
+  // When the notification was created.
+  google.protobuf.Timestamp created_at = 11;
+
+  // Flexible metadata.
+  map<string, string> metadata = 12;
+}
+
+// DeliveryReceipt records the result of a delivery attempt.
+message DeliveryReceipt {
+  string notification_id = 1;
+  Channel channel = 2;
+  DeliveryStatus status = 3;
+  google.protobuf.Timestamp attempted_at = 4;
+  google.protobuf.Timestamp delivered_at = 5;
+  string error_message = 6;
+  uint32 attempt_number = 7;
+}
