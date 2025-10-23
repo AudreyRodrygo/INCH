@@ -9,3 +9,4 @@ Development log — tracks feature additions as they were implemented.
 - 2025-10-19: feat(pkg): add postgres connection pool with pgx
 - 2025-10-21: feat(pkg): add redis client wrapper with retry
 - 2025-10-22: feat(pkg): implement token bucket rate limiter
+- 2025-10-23: feat(pkg): implement circuit breaker with half-open state
