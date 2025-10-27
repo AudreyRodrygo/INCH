@@ -11,3 +11,4 @@ Development log — tracks feature additions as they were implemented.
 - 2025-10-22: feat(pkg): implement token bucket rate limiter
 - 2025-10-23: feat(pkg): implement circuit breaker with half-open state
 - 2025-10-26: feat(pkg): add kafka consumer group with franz-go
+- 2025-10-27: feat(pkg): add kafka producer with idempotent writes
