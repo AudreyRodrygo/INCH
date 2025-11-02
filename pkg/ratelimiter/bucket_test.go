@@ -95,11 +95,13 @@ func TestTokens_ReportsCurrentCount(t *testing.T) {
 }
 
 func TestAllow_ConcurrentSafety(t *testing.T) {
-	limiter := ratelimiter.New(1000, 100)
+	// Use a very low rate so refill doesn't interfere during the test.
+	// 0.1 tokens/sec = 1 token every 10 seconds — effectively no refill.
+	limiter := ratelimiter.New(0.1, 100)
 	defer limiter.Stop()
 
 	// Run 200 goroutines trying to get tokens simultaneously.
-	// Only 100 should succeed (burst capacity).
+	// Only 100 should succeed (burst capacity, no refill during test).
 	var allowed atomic.Int64
 	var wg sync.WaitGroup
 
