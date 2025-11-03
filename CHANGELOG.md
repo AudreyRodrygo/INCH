@@ -14,3 +14,4 @@ Development log — tracks feature additions as they were implemented.
 - 2025-10-27: feat(pkg): add kafka producer with idempotent writes
 - 2025-10-29: feat(pkg): add NATS JetStream consumer wrapper
 - 2025-10-30: feat(pkg): implement DLQ with dead letter republish logic
+- 2025-11-03: feat(collector): scaffold event-collector service
