@@ -17,3 +17,4 @@ Development log — tracks feature additions as they were implemented.
 - 2025-11-03: feat(collector): scaffold event-collector service
 - 2025-11-04: feat(collector): implement gRPC server for event ingestion
 - 2025-11-05: feat(proto): add event.proto schema
+- 2025-11-05: feat(proto): generate protobuf Go bindings
