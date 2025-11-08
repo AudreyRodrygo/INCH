@@ -20,3 +20,4 @@ Development log — tracks feature additions as they were implemented.
 - 2025-11-05: feat(proto): generate protobuf Go bindings
 - 2025-11-06: feat(collector): add kafka producer for event forwarding
 - 2025-11-07: feat(processor): scaffold event-processor service
+- 2025-11-08: feat(processor): implement kafka consumer with worker pool
