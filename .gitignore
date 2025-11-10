@@ -35,8 +35,7 @@ Thumbs.db
 # Docker
 docker-compose.override.yml
 
-# Generated
-gen/
+# Generated (proto gen code is committed — standard Go practice)
 
 # Temporary
 tmp/
