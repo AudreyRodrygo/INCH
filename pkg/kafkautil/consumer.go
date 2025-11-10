@@ -44,7 +44,8 @@ func NewConsumer(cfg ConsumerConfig, opts ...kgo.Opt) (*kgo.Client, error) {
 		return nil, fmt.Errorf("kafkautil: consumer group ID is required")
 	}
 
-	allOpts := []kgo.Opt{
+	allOpts := make([]kgo.Opt, 0, 4+len(opts))
+	allOpts = append(allOpts,
 		kgo.SeedBrokers(cfg.Brokers...),
 		kgo.ConsumerGroup(cfg.GroupID),
 		kgo.ConsumeTopics(cfg.Topics...),
@@ -53,7 +54,7 @@ func NewConsumer(cfg ConsumerConfig, opts ...kgo.Opt) (*kgo.Client, error) {
 		// This means a new consumer group will process all existing events.
 		// For our use case this is correct — we don't want to miss events.
 		kgo.ConsumeResetOffset(kgo.NewOffset().AtStart()),
-	}
+	)
 
 	allOpts = append(allOpts, opts...)
 

@@ -6,7 +6,7 @@ import (
 	"github.com/AudreyRodrygo/Sentinel/pkg/postgres"
 )
 
-func TestConfig_DSN(t *testing.T) {
+func TestConfig_DSN(t *testing.T) { //nolint:gosec // G101: test credentials, not real
 	tests := []struct {
 		name string
 		cfg  postgres.Config

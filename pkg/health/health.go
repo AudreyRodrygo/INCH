@@ -84,10 +84,10 @@ func (c *Checker) ListenAndServe(ctx context.Context, addr string) error {
 	}
 
 	// Shut down when context is cancelled.
-	go func() {
+	go func() { //nolint:gosec // G118: intentionally using Background for shutdown after parent cancel
 		<-ctx.Done()
 
-		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second) //nolint:gosec // G118: need fresh context for shutdown after parent cancellation
 		defer cancel()
 
 		_ = srv.Shutdown(shutdownCtx)

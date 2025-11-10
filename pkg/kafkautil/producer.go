@@ -44,7 +44,8 @@ func NewProducer(cfg ProducerConfig, opts ...kgo.Opt) (*kgo.Client, error) {
 		return nil, fmt.Errorf("kafkautil: at least one broker address is required")
 	}
 
-	allOpts := []kgo.Opt{
+	allOpts := make([]kgo.Opt, 0, 3+len(opts))
+	allOpts = append(allOpts,
 		kgo.SeedBrokers(cfg.Brokers...),
 		kgo.DefaultProduceTopic(cfg.Topic),
 
@@ -54,7 +55,7 @@ func NewProducer(cfg ProducerConfig, opts ...kgo.Opt) (*kgo.Client, error) {
 		//   - LeaderAck: leader confirms write (our choice)
 		//   - AllISRAcks: all replicas confirm (most durable, slowest)
 		kgo.RequiredAcks(kgo.LeaderAck()),
-	}
+	)
 
 	allOpts = append(allOpts, opts...)
 

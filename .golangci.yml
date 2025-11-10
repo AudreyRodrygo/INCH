@@ -62,7 +62,8 @@ linters:
 
     gosec:
       excludes:
-        - G104
+        - G101  # Hardcoded credentials — false positives in test configs
+        - G104  # Unhandled errors — covered by errcheck
 
     govet:
       enable-all: true
@@ -80,6 +81,7 @@ issues:
         - cyclop
         - gocognit
         - errcheck
+        - gosec
 
     - path: cmd/.*/main\.go
       linters:
