@@ -12,6 +12,7 @@ import (
 
 	pb "github.com/AudreyRodrygo/Sentinel/gen/sentinel/v1"
 	"github.com/AudreyRodrygo/Sentinel/pkg/observability"
+	"github.com/AudreyRodrygo/Sentinel/sentinel/internal/processor/enrichment"
 )
 
 // Pool manages a fixed number of worker goroutines that process events
@@ -28,10 +29,11 @@ import (
 //   - Backpressure: when channel is full, Kafka consumer pauses
 //   - Predictable performance under load
 type Pool struct {
-	workCh chan *pb.SecurityEvent // Buffered channel for backpressure.
-	db     *pgxpool.Pool
-	logger *zap.Logger
-	count  int // Number of workers.
+	workCh   chan *pb.SecurityEvent // Buffered channel for backpressure.
+	db       *pgxpool.Pool
+	enricher *enrichment.Pipeline
+	logger   *zap.Logger
+	count    int // Number of workers.
 }
 
 // NewPool creates a worker pool.
@@ -40,13 +42,15 @@ type Pool struct {
 //   - count: number of worker goroutines
 //   - bufferSize: channel buffer (backpressure threshold)
 //   - db: PostgreSQL connection pool for persisting events
+//   - enricher: enrichment pipeline (GeoIP, threat intel, etc.)
 //   - logger: structured logger
-func NewPool(count, bufferSize int, db *pgxpool.Pool, logger *zap.Logger) *Pool {
+func NewPool(count, bufferSize int, db *pgxpool.Pool, enricher *enrichment.Pipeline, logger *zap.Logger) *Pool {
 	return &Pool{
-		workCh: make(chan *pb.SecurityEvent, bufferSize),
-		db:     db,
-		logger: logger,
-		count:  count,
+		workCh:   make(chan *pb.SecurityEvent, bufferSize),
+		db:       db,
+		enricher: enricher,
+		logger:   logger,
+		count:    count,
 	}
 }
 
@@ -121,8 +125,18 @@ func (p *Pool) processEvent(ctx context.Context, event *pb.SecurityEvent) error 
 	ctx, span := tracer.Start(ctx, "process-event")
 	defer span.End()
 
-	// TODO Phase 2b: GeoIP enrichment
-	// TODO Phase 2b: Threat intel lookup
+	// Enrich the event (GeoIP, threat intel, etc.).
+	if err := p.enricher.Enrich(ctx, event); err != nil {
+		p.logger.Warn("enrichment partially failed",
+			zap.String("event_id", event.EventId),
+			zap.Error(err),
+		)
+		// Continue — partial enrichment is better than no processing.
+	}
+
+	// Classify severity based on event type + enrichment data.
+	event.Severity = ClassifySeverity(event)
+
 	// TODO Phase 3: Rule engine evaluation
 
 	// Persist to PostgreSQL.

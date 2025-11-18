@@ -18,6 +18,7 @@ import (
 	"github.com/AudreyRodrygo/Sentinel/pkg/observability"
 	"github.com/AudreyRodrygo/Sentinel/pkg/postgres"
 	"github.com/AudreyRodrygo/Sentinel/sentinel/internal/processor"
+	"github.com/AudreyRodrygo/Sentinel/sentinel/internal/processor/enrichment"
 )
 
 const serviceName = "event-processor"
@@ -71,8 +72,14 @@ func run() error {
 	}
 	defer consumer.Close()
 
-	// 7. Worker pool.
-	pool := processor.NewPool(cfg.WorkerCount, cfg.ChannelBuffer, db, logger)
+	// 7. Enrichment pipeline.
+	enrichPipeline := enrichment.NewPipeline(
+		enrichment.NewGeoIP(),
+		enrichment.NewThreatIntel(),
+	)
+
+	// 8. Worker pool.
+	pool := processor.NewPool(cfg.WorkerCount, cfg.ChannelBuffer, db, enrichPipeline, logger)
 
 	// 8. Health check.
 	checker := health.New()
