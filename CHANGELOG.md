@@ -23,3 +23,4 @@ Development log — tracks feature additions as they were implemented.
 - 2025-11-08: feat(processor): implement kafka consumer with worker pool
 - 2025-11-11: feat(processor): add GeoIP enrichment step
 - 2025-11-12: feat(processor): implement severity classifier
+- 2025-11-19: feat(rules): design rule interface and evaluator
