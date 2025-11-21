@@ -25,3 +25,4 @@ Development log — tracks feature additions as they were implemented.
 - 2025-11-12: feat(processor): implement severity classifier
 - 2025-11-19: feat(rules): design rule interface and evaluator
 - 2025-11-20: feat(rules): implement threshold rule
+- 2025-11-21: feat(rules): implement anomaly detection rule
