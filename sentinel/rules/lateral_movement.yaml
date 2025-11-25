@@ -1,0 +1,25 @@
+id: lateral-movement
+name: Lateral Movement Detection
+description: "Brute force followed by successful login then privilege escalation from same IP"
+type: sequence
+group_by: [source_ip]
+window: 10m
+severity: CRITICAL
+steps:
+  - conditions:
+      - field: type
+        op: eq
+        value: EVENT_TYPE_AUTH_FAILURE
+    count: 5
+  - conditions:
+      - field: type
+        op: eq
+        value: EVENT_TYPE_AUTH_SUCCESS
+    count: 1
+  - conditions:
+      - field: type
+        op: eq
+        value: EVENT_TYPE_PRIVILEGE_ESCALATION
+    count: 1
+actions: [alert]
+tags: [kill_chain, lateral_movement, critical]
