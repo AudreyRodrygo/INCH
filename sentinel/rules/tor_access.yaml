@@ -1,0 +1,14 @@
+id: tor-auth-attempt
+name: Authentication Attempt from Tor Exit Node
+description: "Any authentication attempt from a known Tor exit node"
+type: single
+conditions:
+  - field: type
+    op: eq
+    value: EVENT_TYPE_AUTH_FAILURE
+  - field: threat_category
+    op: eq
+    value: tor_exit
+severity: HIGH
+actions: [alert]
+tags: [tor, suspicious_source]

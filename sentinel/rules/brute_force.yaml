@@ -1,0 +1,17 @@
+id: brute-force-ssh
+name: SSH Brute Force Detection
+description: "5+ failed SSH logins from same IP in 60 seconds"
+type: threshold
+conditions:
+  - field: type
+    op: eq
+    value: EVENT_TYPE_AUTH_FAILURE
+  - field: service
+    op: eq
+    value: sshd
+group_by: [source_ip]
+threshold: 5
+window: 60s
+severity: HIGH
+actions: [alert]
+tags: [brute_force, ssh]
