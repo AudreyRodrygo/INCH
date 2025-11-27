@@ -28,3 +28,4 @@ Development log — tracks feature additions as they were implemented.
 - 2025-11-21: feat(rules): implement anomaly detection rule
 - 2025-11-22: feat(rules): implement correlation window rule
 - 2025-11-26: feat(alertmgr): scaffold alert-manager service
+- 2025-11-27: feat(alertmgr): implement alert deduplication
