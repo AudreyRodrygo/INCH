@@ -19,6 +19,7 @@ import (
 	"github.com/AudreyRodrygo/Sentinel/pkg/postgres"
 	"github.com/AudreyRodrygo/Sentinel/sentinel/internal/processor"
 	"github.com/AudreyRodrygo/Sentinel/sentinel/internal/processor/enrichment"
+	"github.com/AudreyRodrygo/Sentinel/sentinel/internal/processor/rules"
 )
 
 const serviceName = "event-processor"
@@ -78,8 +79,23 @@ func run() error {
 		enrichment.NewThreatIntel(),
 	)
 
-	// 8. Worker pool.
-	pool := processor.NewPool(cfg.WorkerCount, cfg.ChannelBuffer, db, enrichPipeline, logger)
+	// 8. Rule engine.
+	ruleList, ruleErr := rules.LoadFromDir("sentinel/rules")
+	if ruleErr != nil {
+		logger.Warn("failed to load rules", zap.Error(ruleErr))
+	}
+	logger.Info("rules loaded", zap.Int("count", len(ruleList)))
+	ruleEngine := rules.New(ruleList, logger)
+
+	// 9. Kafka producer for alerts.
+	alertProducer, alertErr := kafkautil.NewProducer(cfg.KafkaAlerts)
+	if alertErr != nil {
+		return fmt.Errorf("creating alert producer: %w", alertErr)
+	}
+	defer alertProducer.Close()
+
+	// 10. Worker pool.
+	pool := processor.NewPool(cfg.WorkerCount, cfg.ChannelBuffer, db, enrichPipeline, ruleEngine, alertProducer, cfg.KafkaAlerts.Topic, logger)
 
 	// 8. Health check.
 	checker := health.New()
