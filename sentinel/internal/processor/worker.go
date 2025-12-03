@@ -10,9 +10,13 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/protobuf/proto"
 
+	"github.com/google/uuid"
+	"github.com/twmb/franz-go/pkg/kgo"
+
 	pb "github.com/AudreyRodrygo/Sentinel/gen/sentinel/v1"
 	"github.com/AudreyRodrygo/Sentinel/pkg/observability"
 	"github.com/AudreyRodrygo/Sentinel/sentinel/internal/processor/enrichment"
+	"github.com/AudreyRodrygo/Sentinel/sentinel/internal/processor/rules"
 )
 
 // Pool manages a fixed number of worker goroutines that process events
@@ -29,28 +33,27 @@ import (
 //   - Backpressure: when channel is full, Kafka consumer pauses
 //   - Predictable performance under load
 type Pool struct {
-	workCh   chan *pb.SecurityEvent // Buffered channel for backpressure.
-	db       *pgxpool.Pool
-	enricher *enrichment.Pipeline
-	logger   *zap.Logger
-	count    int // Number of workers.
+	workCh      chan *pb.SecurityEvent // Buffered channel for backpressure.
+	db          *pgxpool.Pool
+	enricher    *enrichment.Pipeline
+	ruleEngine  *rules.Engine
+	alertClient *kgo.Client // Kafka producer for alerts topic.
+	alertTopic  string
+	logger      *zap.Logger
+	count       int // Number of workers.
 }
 
 // NewPool creates a worker pool.
-//
-// Parameters:
-//   - count: number of worker goroutines
-//   - bufferSize: channel buffer (backpressure threshold)
-//   - db: PostgreSQL connection pool for persisting events
-//   - enricher: enrichment pipeline (GeoIP, threat intel, etc.)
-//   - logger: structured logger
-func NewPool(count, bufferSize int, db *pgxpool.Pool, enricher *enrichment.Pipeline, logger *zap.Logger) *Pool {
+func NewPool(count, bufferSize int, db *pgxpool.Pool, enricher *enrichment.Pipeline, ruleEngine *rules.Engine, alertClient *kgo.Client, alertTopic string, logger *zap.Logger) *Pool {
 	return &Pool{
-		workCh:   make(chan *pb.SecurityEvent, bufferSize),
-		db:       db,
-		enricher: enricher,
-		logger:   logger,
-		count:    count,
+		workCh:      make(chan *pb.SecurityEvent, bufferSize),
+		db:          db,
+		enricher:    enricher,
+		ruleEngine:  ruleEngine,
+		alertClient: alertClient,
+		alertTopic:  alertTopic,
+		logger:      logger,
+		count:       count,
 	}
 }
 
@@ -137,7 +140,16 @@ func (p *Pool) processEvent(ctx context.Context, event *pb.SecurityEvent) error 
 	// Classify severity based on event type + enrichment data.
 	event.Severity = ClassifySeverity(event)
 
-	// TODO Phase 3: Rule engine evaluation
+	// Evaluate correlation rules.
+	results := p.ruleEngine.Evaluate(event)
+	for _, result := range results {
+		if alertErr := p.publishAlert(ctx, event, result); alertErr != nil {
+			p.logger.Error("failed to publish alert",
+				zap.String("rule", result.Rule.ID),
+				zap.Error(alertErr),
+			)
+		}
+	}
 
 	// Persist to PostgreSQL.
 	if err := p.persistEvent(ctx, event); err != nil {
@@ -184,4 +196,49 @@ func (p *Pool) persistEvent(ctx context.Context, event *pb.SecurityEvent) error 
 	}
 
 	return nil
+}
+
+// publishAlert creates a Protobuf Alert from a rule result and publishes to Kafka.
+func (p *Pool) publishAlert(ctx context.Context, event *pb.SecurityEvent, result rules.Result) error {
+	if p.alertClient == nil {
+		return nil // Alerts publishing not configured.
+	}
+
+	alert := &pb.Alert{
+		AlertId:    uuid.NewString(),
+		RuleId:     result.Rule.ID,
+		RuleName:   result.Rule.Name,
+		Severity:   result.Rule.SeverityProto(),
+		CreatedAt:  event.Timestamp,
+		EventCount: uint32(result.EventCount), //nolint:gosec // EventCount is always small positive
+		EventIds:   result.EventIDs,
+		Tags:       result.Rule.Tags,
+		GroupValues: map[string]string{
+			"group_key": result.GroupKey,
+		},
+		Description: fmt.Sprintf("Rule '%s' fired for group '%s' (%d events)",
+			result.Rule.Name, result.GroupKey, result.EventCount),
+	}
+
+	// Copy event enrichment data to alert.
+	if event.Metadata != nil {
+		alert.Enrichment = make(map[string]string, len(event.Metadata))
+		for k, v := range event.Metadata {
+			alert.Enrichment[k] = v
+		}
+	}
+
+	data, err := proto.Marshal(alert)
+	if err != nil {
+		return fmt.Errorf("marshaling alert: %w", err)
+	}
+
+	record := &kgo.Record{
+		Topic: p.alertTopic,
+		Key:   []byte(result.Rule.ID),
+		Value: data,
+	}
+
+	results := p.alertClient.ProduceSync(ctx, record)
+	return results.FirstErr()
 }
