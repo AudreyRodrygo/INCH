@@ -32,3 +32,4 @@ Development log — tracks feature additions as they were implemented.
 - 2025-11-28: feat(alertmgr): add alert routing by severity
 - 2025-11-30: feat(dispatcher): scaffold notification-dispatcher
 - 2025-12-01: feat(dispatcher): implement multi-channel routing
+- 2025-12-04: feat(agent): scaffold sentinel-agent binary
