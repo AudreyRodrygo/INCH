@@ -33,3 +33,4 @@ Development log — tracks feature additions as they were implemented.
 - 2025-11-30: feat(dispatcher): scaffold notification-dispatcher
 - 2025-12-01: feat(dispatcher): implement multi-channel routing
 - 2025-12-04: feat(agent): scaffold sentinel-agent binary
+- 2025-12-05: feat(agent): implement log tail with fsnotify
