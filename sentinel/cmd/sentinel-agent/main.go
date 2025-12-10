@@ -7,6 +7,14 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+
+	"go.uber.org/zap"
+	"golang.org/x/sync/errgroup"
+
+	pb "github.com/AudreyRodrygo/Sentinel/gen/sentinel/v1"
+	"github.com/AudreyRodrygo/Sentinel/pkg/config"
+	"github.com/AudreyRodrygo/Sentinel/pkg/observability"
+	"github.com/AudreyRodrygo/Sentinel/sentinel/internal/agent"
 )
 
 const serviceName = "sentinel-agent"
@@ -18,18 +26,71 @@ func main() {
 }
 
 func run() error {
+	cfg := agent.Defaults()
+	if err := config.Load("AGENT", "", &cfg); err != nil {
+		return fmt.Errorf("loading config: %w", err)
+	}
+
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	fmt.Printf("[%s] starting...\n", serviceName)
-	fmt.Printf("[%s] press Ctrl+C to stop\n", serviceName)
+	logger := observability.MustLogger(serviceName, cfg.LogLevel, cfg.Development)
+	defer func() { _ = logger.Sync() }()
 
-	// TODO: Initialize config, logger, log tailer, process watcher, gRPC client.
-	// TODO: Start event collection and batching.
+	logger.Info("starting agent",
+		zap.String("agent_id", cfg.AgentID),
+		zap.String("collector", cfg.CollectorAddr),
+		zap.Int("batch_size", cfg.BatchSize),
+	)
 
-	<-ctx.Done()
+	// Event channel — all sources write here, batcher reads.
+	events := make(chan *pb.SecurityEvent, 1000)
 
-	fmt.Printf("\n[%s] shutting down gracefully...\n", serviceName)
-	fmt.Printf("[%s] stopped\n", serviceName)
+	// Create batcher (gRPC connection to collector).
+	batcher, err := agent.NewBatcher(
+		cfg.CollectorAddr, cfg.AgentID,
+		cfg.BatchSize, cfg.FlushIntervalSec,
+		logger,
+	)
+	if err != nil {
+		return fmt.Errorf("creating batcher: %w", err)
+	}
+	defer func() { _ = batcher.Close() }()
+
+	// Start all sources + batcher in an errgroup.
+	g, ctx := errgroup.WithContext(ctx)
+
+	// Start log tailers.
+	for _, path := range cfg.LogFiles {
+		tailer := agent.NewLogTailer(path, cfg.AgentID, logger)
+		g.Go(func() error {
+			if sourceErr := tailer.Start(ctx, events); sourceErr != nil && ctx.Err() == nil {
+				logger.Warn("log tailer stopped", zap.String("source", tailer.Name()), zap.Error(sourceErr))
+			}
+			return nil // Don't kill other sources if one file disappears.
+		})
+	}
+
+	// Start process watcher (if enabled).
+	if cfg.EnableProcessWatch {
+		pw := agent.NewProcessWatcher(cfg.ProcessWatchIntervalSec, cfg.AgentID, logger)
+		g.Go(func() error {
+			return pw.Start(ctx, events)
+		})
+	}
+
+	// Start batcher (reads from events channel, sends to collector).
+	g.Go(func() error {
+		return batcher.Run(ctx, events)
+	})
+
+	logger.Info("agent running")
+
+	// Wait for all goroutines to finish (triggered by ctx cancel).
+	if err := g.Wait(); err != nil && ctx.Err() == nil {
+		return fmt.Errorf("agent error: %w", err)
+	}
+
+	logger.Info("agent stopped")
 	return nil
 }
