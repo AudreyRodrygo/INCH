@@ -36,3 +36,4 @@ Development log — tracks feature additions as they were implemented.
 - 2025-12-05: feat(agent): implement log tail with fsnotify
 - 2025-12-06: feat(agent): add process watch via proc polling
 - 2025-12-07: feat(agent): implement gRPC event publisher
+- 2025-12-11: feat(gateway): scaffold gateway-api service
