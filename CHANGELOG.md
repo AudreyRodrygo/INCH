@@ -38,3 +38,4 @@ Development log — tracks feature additions as they were implemented.
 - 2025-12-07: feat(agent): implement gRPC event publisher
 - 2025-12-11: feat(gateway): scaffold gateway-api service
 - 2025-12-12: feat(gateway): add REST endpoints with chi router
+- 2025-12-13: feat(delivery): scaffold delivery-worker service
