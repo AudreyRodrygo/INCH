@@ -40,3 +40,4 @@ Development log — tracks feature additions as they were implemented.
 - 2025-12-12: feat(gateway): add REST endpoints with chi router
 - 2025-12-13: feat(delivery): scaffold delivery-worker service
 - 2025-12-14: feat(delivery): implement email channel via SMTP
+- 2025-12-15: feat(delivery): implement Slack webhook channel
