@@ -42,3 +42,4 @@ Development log — tracks feature additions as they were implemented.
 - 2025-12-14: feat(delivery): implement email channel via SMTP
 - 2025-12-15: feat(delivery): implement Slack webhook channel
 - 2025-12-18: feat(gateway): add forensics replay endpoint
+- 2025-12-19: feat(gateway): add delivery analytics aggregation
