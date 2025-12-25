@@ -1,0 +1,75 @@
+{
+  "dashboard": {
+    "title": "Herald Overview",
+    "description": "Notification delivery pipeline metrics",
+    "panels": [
+      {
+        "title": "Notifications / sec",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(notifications_sent_total[1m])",
+            "legendFormat": "{{channel}}"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 }
+      },
+      {
+        "title": "Delivery Latency by Channel",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(delivery_latency_seconds_bucket[5m]))",
+            "legendFormat": "{{channel}} P95"
+          }
+        ],
+        "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 }
+      },
+      {
+        "title": "Priority Queue Depth",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "priority_queue_depth",
+            "legendFormat": "queue"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 8, "w": 8, "h": 6 }
+      },
+      {
+        "title": "SLA Compliance",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sla_compliance_rate",
+            "legendFormat": "{{priority}}"
+          }
+        ],
+        "gridPos": { "x": 8, "y": 8, "w": 8, "h": 6 },
+        "description": "% of notifications meeting SLA target"
+      },
+      {
+        "title": "DLQ Depth",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "dlq_depth",
+            "legendFormat": "dead letters"
+          }
+        ],
+        "gridPos": { "x": 16, "y": 8, "w": 8, "h": 6 }
+      },
+      {
+        "title": "Delivery Success Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(notifications_sent_total[5m]) / (rate(notifications_sent_total[5m]) + rate(notifications_failed_total[5m]))",
+            "legendFormat": "{{channel}}"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 14, "w": 24, "h": 8 }
+      }
+    ]
+  }
+}
