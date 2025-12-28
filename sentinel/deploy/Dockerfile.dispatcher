@@ -1,0 +1,13 @@
+FROM golang:1.25-alpine AS build
+WORKDIR /src
+COPY go.work go.work
+COPY pkg/ pkg/
+COPY gen/ gen/
+COPY sentinel/ sentinel/
+RUN cd sentinel && go build -ldflags="-s -w" -o /notification-dispatcher ./cmd/notification-dispatcher
+
+FROM gcr.io/distroless/static-debian12:nonroot
+COPY --from=build /notification-dispatcher /notification-dispatcher
+EXPOSE 8084
+USER nonroot:nonroot
+ENTRYPOINT ["/notification-dispatcher"]

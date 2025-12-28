@@ -1,0 +1,13 @@
+FROM golang:1.25-alpine AS build
+WORKDIR /src
+COPY go.work go.work
+COPY pkg/ pkg/
+COPY gen/ gen/
+COPY herald/ herald/
+RUN cd herald && go build -ldflags="-s -w" -o /gateway-api ./cmd/gateway-api
+
+FROM gcr.io/distroless/static-debian12:nonroot
+COPY --from=build /gateway-api /gateway-api
+EXPOSE 8090 8091
+USER nonroot:nonroot
+ENTRYPOINT ["/gateway-api"]

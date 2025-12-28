@@ -1,0 +1,152 @@
+# Full stack: infrastructure + all Sentinel and Herald services.
+# Usage: docker-compose up --build
+#
+# For infrastructure only (without app services):
+#   docker-compose -f docker-compose.infra.yml up
+
+services:
+  # ─── Infrastructure ───────────────────────────────────────────
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: sentinel
+      POSTGRES_PASSWORD: sentinel
+      POSTGRES_DB: sentinel
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sentinel"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  kafka:
+    image: bitnami/kafka:3.7
+    environment:
+      KAFKA_CFG_NODE_ID: 1
+      KAFKA_CFG_PROCESS_ROLES: broker,controller
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_CFG_LOG_RETENTION_HOURS: 168
+    ports: ["9094:9094"]
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  nats:
+    image: nats:2.10-alpine
+    command: ["--jetstream", "--store_dir=/data", "-m", "8222"]
+    ports: ["4222:4222", "8222:8222"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8222/healthz || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.55
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports: ["16686:16686", "4317:4317"]
+
+  # ─── Sentinel Services ────────────────────────────────────────
+
+  event-collector:
+    build:
+      context: .
+      dockerfile: sentinel/deploy/Dockerfile.collector
+    ports: ["50051:50051", "8081:8081"]
+    environment:
+      COLLECTOR_KAFKA_BROKERS: kafka:9092
+      COLLECTOR_KAFKA_TOPIC: raw-events
+      COLLECTOR_REDIS_ADDR: redis:6379
+      COLLECTOR_OTLP_ENDPOINT: jaeger:4317
+    depends_on:
+      kafka: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  event-processor:
+    build:
+      context: .
+      dockerfile: sentinel/deploy/Dockerfile.processor
+    ports: ["8082:8082"]
+    environment:
+      PROCESSOR_KAFKA_BROKERS: kafka:9092
+      PROCESSOR_KAFKA_TOPICS: raw-events
+      PROCESSOR_KAFKA_GROUP_ID: event-processor
+      PROCESSOR_KAFKA_ALERTS_BROKERS: kafka:9092
+      PROCESSOR_KAFKA_ALERTS_TOPIC: alerts
+      PROCESSOR_POSTGRES_HOST: postgres
+      PROCESSOR_POSTGRES_PORT: 5432
+      PROCESSOR_POSTGRES_DATABASE: sentinel
+      PROCESSOR_POSTGRES_USER: sentinel
+      PROCESSOR_POSTGRES_PASSWORD: sentinel
+      PROCESSOR_OTLP_ENDPOINT: jaeger:4317
+    depends_on:
+      kafka: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+
+  alert-manager:
+    build:
+      context: .
+      dockerfile: sentinel/deploy/Dockerfile.alertmgr
+    ports: ["8083:8083"]
+    environment:
+      ALERTMGR_KAFKA_BROKERS: kafka:9092
+      ALERTMGR_KAFKA_TOPICS: alerts
+      ALERTMGR_KAFKA_GROUP_ID: alert-manager
+      ALERTMGR_NATS_URL: nats://nats:4222
+      ALERTMGR_OTLP_ENDPOINT: jaeger:4317
+    depends_on:
+      kafka: { condition: service_healthy }
+      nats: { condition: service_healthy }
+
+  notification-dispatcher:
+    build:
+      context: .
+      dockerfile: sentinel/deploy/Dockerfile.dispatcher
+    ports: ["8084:8084"]
+    environment:
+      DISPATCHER_NATS_URL: nats://nats:4222
+      DISPATCHER_OTLP_ENDPOINT: jaeger:4317
+    depends_on:
+      nats: { condition: service_healthy }
+
+  # ─── Herald Services ──────────────────────────────────────────
+
+  gateway-api:
+    build:
+      context: .
+      dockerfile: herald/deploy/Dockerfile.gateway
+    ports: ["8090:8090", "8091:8091"]
+    environment:
+      GATEWAY_NATS_URL: nats://nats:4222
+    depends_on:
+      nats: { condition: service_healthy }
+
+  delivery-worker:
+    build:
+      context: .
+      dockerfile: herald/deploy/Dockerfile.worker
+    ports: ["8092:8092"]
+    environment:
+      DELIVERY_NATS_URL: nats://nats:4222
+    depends_on:
+      nats: { condition: service_healthy }

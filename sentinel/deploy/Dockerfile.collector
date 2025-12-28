@@ -1,0 +1,26 @@
+# Multi-stage build: compile in Go image, run in distroless.
+# Result: ~15MB image instead of ~800MB.
+#
+# Build: docker build -f sentinel/deploy/Dockerfile.collector -t sentinel/event-collector .
+# Run:   docker run -p 50051:50051 sentinel/event-collector
+
+# Stage 1: Build
+FROM golang:1.25-alpine AS build
+
+WORKDIR /src
+COPY go.work go.work
+COPY pkg/ pkg/
+COPY gen/ gen/
+COPY sentinel/ sentinel/
+
+RUN cd sentinel && go build -ldflags="-s -w" -o /event-collector ./cmd/event-collector
+
+# Stage 2: Run
+FROM gcr.io/distroless/static-debian12:nonroot
+
+COPY --from=build /event-collector /event-collector
+
+EXPOSE 50051 8081
+USER nonroot:nonroot
+
+ENTRYPOINT ["/event-collector"]
