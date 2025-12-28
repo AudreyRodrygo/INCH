@@ -1,0 +1,15 @@
+FROM golang:1.25-alpine AS build
+WORKDIR /src
+COPY go.work go.work
+COPY pkg/ pkg/
+COPY gen/ gen/
+COPY sentinel/ sentinel/
+RUN cd sentinel && go build -ldflags="-s -w" -o /event-processor ./cmd/event-processor
+
+FROM gcr.io/distroless/static-debian12:nonroot
+COPY --from=build /event-processor /event-processor
+COPY sentinel/rules/ /rules/
+COPY sentinel/migrations/ /migrations/
+EXPOSE 8082
+USER nonroot:nonroot
+ENTRYPOINT ["/event-processor"]

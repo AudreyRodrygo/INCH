@@ -1,0 +1,13 @@
+FROM golang:1.25-alpine AS build
+WORKDIR /src
+COPY go.work go.work
+COPY pkg/ pkg/
+COPY gen/ gen/
+COPY sentinel/ sentinel/
+RUN cd sentinel && go build -ldflags="-s -w" -o /alert-manager ./cmd/alert-manager
+
+FROM gcr.io/distroless/static-debian12:nonroot
+COPY --from=build /alert-manager /alert-manager
+EXPOSE 8083
+USER nonroot:nonroot
+ENTRYPOINT ["/alert-manager"]
