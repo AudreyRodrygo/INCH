@@ -3,7 +3,7 @@ package postgres_test
 import (
 	"testing"
 
-	"github.com/AudreyRodrygo/Sentinel/pkg/postgres"
+	"github.com/AudreyRodrygo/Inch/pkg/postgres"
 )
 
 func TestConfig_DSN(t *testing.T) { //nolint:gosec // G101: test credentials, not real

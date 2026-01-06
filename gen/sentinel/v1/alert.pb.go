@@ -233,9 +233,9 @@ const file_sentinel_v1_alert_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"8\n" +
 	"\n" +
 	"AlertBatch\x12*\n" +
-	"\x06alerts\x18\x01 \x03(\v2\x12.sentinel.v1.AlertR\x06alertsB\xa8\x01\n" +
+	"\x06alerts\x18\x01 \x03(\v2\x12.sentinel.v1.AlertR\x06alertsB\xa4\x01\n" +
 	"\x0fcom.sentinel.v1B\n" +
-	"AlertProtoP\x01Z<github.com/AudreyRodrygo/Sentinel/gen/sentinel/v1;sentinelv1\xa2\x02\x03SXX\xaa\x02\vSentinel.V1\xca\x02\vSentinel\\V1\xe2\x02\x17Sentinel\\V1\\GPBMetadata\xea\x02\fSentinel::V1b\x06proto3"
+	"AlertProtoP\x01Z8github.com/AudreyRodrygo/Inch/gen/sentinel/v1;sentinelv1\xa2\x02\x03SXX\xaa\x02\vSentinel.V1\xca\x02\vSentinel\\V1\xe2\x02\x17Sentinel\\V1\\GPBMetadata\xea\x02\fSentinel::V1b\x06proto3"
 
 var (
 	file_sentinel_v1_alert_proto_rawDescOnce sync.Once

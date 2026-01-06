@@ -7,7 +7,7 @@ scrape_configs:
     static_configs:
       - targets: ["localhost:9090"]
 
-  # Sentinel services (will be added as they are developed)
+  # INCH services
   # - job_name: "event-collector"
   #   static_configs:
   #     - targets: ["host.docker.internal:8081"]
@@ -23,12 +23,3 @@ scrape_configs:
   # - job_name: "notification-dispatcher"
   #   static_configs:
   #     - targets: ["host.docker.internal:8084"]
-
-  # Herald services
-  # - job_name: "gateway-api"
-  #   static_configs:
-  #     - targets: ["host.docker.internal:8090"]
-
-  # - job_name: "delivery-worker"
-  #   static_configs:
-  #     - targets: ["host.docker.internal:8091"]

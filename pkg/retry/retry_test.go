@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AudreyRodrygo/Sentinel/pkg/retry"
+	"github.com/AudreyRodrygo/Inch/pkg/retry"
 )
 
 func TestDo_SuccessOnFirstAttempt(t *testing.T) {

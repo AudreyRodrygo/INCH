@@ -44,16 +44,16 @@ func NewProducer(cfg ProducerConfig, opts ...kgo.Opt) (*kgo.Client, error) {
 		return nil, fmt.Errorf("kafkautil: at least one broker address is required")
 	}
 
-	allOpts := make([]kgo.Opt, 0, 3+len(opts))
+	allOpts := make([]kgo.Opt, 0, 4+len(opts))
 	allOpts = append(allOpts,
 		kgo.SeedBrokers(cfg.Brokers...),
 		kgo.DefaultProduceTopic(cfg.Topic),
 
+		// Disable idempotent producer for single-broker dev setup.
+		// In production with replication, enable idempotency + AllISRAcks.
+		kgo.DisableIdempotentWrite(),
+
 		// RequiredAcks: wait for the leader to acknowledge the write.
-		// This is the balance between durability and latency:
-		//   - NoAck: fastest, but messages can be lost
-		//   - LeaderAck: leader confirms write (our choice)
-		//   - AllISRAcks: all replicas confirm (most durable, slowest)
 		kgo.RequiredAcks(kgo.LeaderAck()),
 	)
 

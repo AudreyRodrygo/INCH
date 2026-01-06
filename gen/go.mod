@@ -1,4 +1,4 @@
-module github.com/AudreyRodrygo/Sentinel/gen
+module github.com/AudreyRodrygo/Inch/gen
 
 go 1.26.1
 

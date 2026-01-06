@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/yourusername/sentinel/pkg/observability"
+	"github.com/AudreyRodrygo/Inch/pkg/observability"
 )
 
 func TestInitTracer_NoOpWhenEmpty(t *testing.T) {

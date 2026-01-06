@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AudreyRodrygo/Sentinel/pkg/circuitbreaker"
+	"github.com/AudreyRodrygo/Inch/pkg/circuitbreaker"
 )
 
 var errService = errors.New("service unavailable")

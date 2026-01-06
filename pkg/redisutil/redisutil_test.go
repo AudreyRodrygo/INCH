@@ -3,7 +3,7 @@ package redisutil_test
 import (
 	"testing"
 
-	"github.com/AudreyRodrygo/Sentinel/pkg/redisutil"
+	"github.com/AudreyRodrygo/Inch/pkg/redisutil"
 )
 
 func TestConfig_DefaultAddr(t *testing.T) {

@@ -1,4 +1,4 @@
-module github.com/AudreyRodrygo/Sentinel/pkg
+module github.com/AudreyRodrygo/Inch/pkg
 
 go 1.25.5
 
