@@ -3,7 +3,7 @@ package kafkautil_test
 import (
 	"testing"
 
-	"github.com/AudreyRodrygo/Sentinel/pkg/kafkautil"
+	"github.com/AudreyRodrygo/Inch/pkg/kafkautil"
 )
 
 func TestNewProducer_RequiresBrokers(t *testing.T) {

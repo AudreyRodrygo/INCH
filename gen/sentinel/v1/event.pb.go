@@ -437,9 +437,9 @@ const file_sentinel_v1_event_proto_rawDesc = "" +
 	"\x16EVENT_TYPE_FILE_MODIFY\x10\b\x12#\n" +
 	"\x1fEVENT_TYPE_PRIVILEGE_ESCALATION\x10\t\x12\x1a\n" +
 	"\x16EVENT_TYPE_SYSTEM_CALL\x10\n" +
-	"B\xa8\x01\n" +
+	"B\xa4\x01\n" +
 	"\x0fcom.sentinel.v1B\n" +
-	"EventProtoP\x01Z<github.com/AudreyRodrygo/Sentinel/gen/sentinel/v1;sentinelv1\xa2\x02\x03SXX\xaa\x02\vSentinel.V1\xca\x02\vSentinel\\V1\xe2\x02\x17Sentinel\\V1\\GPBMetadata\xea\x02\fSentinel::V1b\x06proto3"
+	"EventProtoP\x01Z8github.com/AudreyRodrygo/Inch/gen/sentinel/v1;sentinelv1\xa2\x02\x03SXX\xaa\x02\vSentinel.V1\xca\x02\vSentinel\\V1\xe2\x02\x17Sentinel\\V1\\GPBMetadata\xea\x02\fSentinel::V1b\x06proto3"
 
 var (
 	file_sentinel_v1_event_proto_rawDescOnce sync.Once

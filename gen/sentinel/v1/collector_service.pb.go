@@ -251,8 +251,8 @@ const file_sentinel_v1_collector_service_proto_rawDesc = "" +
 	"\brejected\x18\x02 \x01(\rR\brejected2\xb7\x01\n" +
 	"\x10CollectorService\x12S\n" +
 	"\fIngestEvents\x12 .sentinel.v1.IngestEventsRequest\x1a!.sentinel.v1.IngestEventsResponse\x12N\n" +
-	"\fStreamEvents\x12\x17.sentinel.v1.EventBatch\x1a!.sentinel.v1.StreamEventsResponse(\x010\x01B\xb3\x01\n" +
-	"\x0fcom.sentinel.v1B\x15CollectorServiceProtoP\x01Z<github.com/AudreyRodrygo/Sentinel/gen/sentinel/v1;sentinelv1\xa2\x02\x03SXX\xaa\x02\vSentinel.V1\xca\x02\vSentinel\\V1\xe2\x02\x17Sentinel\\V1\\GPBMetadata\xea\x02\fSentinel::V1b\x06proto3"
+	"\fStreamEvents\x12\x17.sentinel.v1.EventBatch\x1a!.sentinel.v1.StreamEventsResponse(\x010\x01B\xaf\x01\n" +
+	"\x0fcom.sentinel.v1B\x15CollectorServiceProtoP\x01Z8github.com/AudreyRodrygo/Inch/gen/sentinel/v1;sentinelv1\xa2\x02\x03SXX\xaa\x02\vSentinel.V1\xca\x02\vSentinel\\V1\xe2\x02\x17Sentinel\\V1\\GPBMetadata\xea\x02\fSentinel::V1b\x06proto3"
 
 var (
 	file_sentinel_v1_collector_service_proto_rawDescOnce sync.Once

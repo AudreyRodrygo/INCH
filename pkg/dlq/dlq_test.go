@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/AudreyRodrygo/Sentinel/pkg/dlq"
+	"github.com/AudreyRodrygo/Inch/pkg/dlq"
 )
 
 func TestMemory_PushAndLen(t *testing.T) {

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/AudreyRodrygo/Sentinel/pkg/ratelimiter"
+	"github.com/AudreyRodrygo/Inch/pkg/ratelimiter"
 )
 
 func TestAllow_ConsumesTokens(t *testing.T) {

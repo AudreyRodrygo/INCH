@@ -3,7 +3,7 @@ package observability_test
 import (
 	"testing"
 
-	"github.com/yourusername/sentinel/pkg/observability"
+	"github.com/AudreyRodrygo/Inch/pkg/observability"
 )
 
 func TestNewLogger_Development(t *testing.T) {

@@ -3,7 +3,7 @@ package natsutil_test
 import (
 	"testing"
 
-	"github.com/AudreyRodrygo/Sentinel/pkg/natsutil"
+	"github.com/AudreyRodrygo/Inch/pkg/natsutil"
 )
 
 func TestConfig_DefaultURL(t *testing.T) {

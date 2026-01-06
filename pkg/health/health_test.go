@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/yourusername/sentinel/pkg/health"
+	"github.com/AudreyRodrygo/Inch/pkg/health"
 )
 
 // httptest.NewRecorder creates a fake HTTP response writer.

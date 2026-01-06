@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/yourusername/sentinel/pkg/config"
+	"github.com/AudreyRodrygo/Inch/pkg/config"
 )
 
 // testConfig is a sample configuration struct used in tests.
