@@ -24,7 +24,7 @@ jobs:
         uses: golangci/golangci-lint-action@v6
         with:
           version: latest
-          args: ./pkg/... ./sentinel/... ./herald/...
+          args: ./pkg/... ./inch/...
 
   test:
     name: Test
@@ -37,7 +37,7 @@ jobs:
           go-version-file: pkg/go.mod
 
       - name: Run tests
-        run: go test ./pkg/... ./sentinel/... ./herald/... -count=1 -race -timeout 60s
+        run: go test ./pkg/... ./inch/... -count=1 -race -timeout 60s
 
   build:
     name: Build
