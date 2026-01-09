@@ -1,112 +1,84 @@
-# Sentinel + Herald
+# INCH
 
-[![CI](https://github.com/AudreyRodrygo/Sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/AudreyRodrygo/Sentinel/actions/workflows/ci.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/AudreyRodrygo/Sentinel)](https://goreportcard.com/report/github.com/AudreyRodrygo/Sentinel)
+[![CI](https://github.com/AudreyRodrygo/INCH/actions/workflows/ci.yml/badge.svg)](https://github.com/AudreyRodrygo/INCH/actions/workflows/ci.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/AudreyRodrygo/Inch)](https://goreportcard.com/report/github.com/AudreyRodrygo/Inch)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> Real-time security event processing platform with intelligent notification delivery.
+> Real-time security event processing platform. Cloud-native, streaming-first, open-source alternative to ELK and MaxPatrol.
 
-**Sentinel** is a cloud-native SIEM platform that processes 10k+ security events/sec in real time. It collects events from lightweight agents, enriches them with GeoIP and threat intelligence, correlates using a custom rule engine with temporal pattern detection, and delivers alerts in under 100ms.
-
-**Herald** is a smart notification gateway with priority-based delivery (heap queue with SLA enforcement), multi-channel delivery (Telegram, Slack, Webhook, Email), and alert fatigue prevention.
+**INCH** is a distributed SIEM platform that ingests security events from lightweight agents, enriches them with GeoIP and threat intelligence, correlates using a custom rule engine with temporal pattern detection, and delivers alerts in under 100ms — all without JVM overhead.
 
 ## Architecture
 
-```mermaid
-graph TB
-    subgraph Agents
-        A1[sentinel-agent<br/>Log Tailer + Process Watch<br/>13MB binary]
-    end
-
-    subgraph Sentinel ["Sentinel — Event Processing"]
-        EC[event-collector<br/>gRPC + Redis Dedup]
-        K1[(Kafka<br/>raw-events)]
-        EP[event-processor<br/>Worker Pool + Rule Engine]
-        K2[(Kafka<br/>alerts)]
-        AM[alert-manager<br/>Circuit Breaker + Rate Limiter]
-        ND[notification-dispatcher<br/>Webhook + DLQ]
-    end
-
-    subgraph Herald ["Herald — Notification Gateway"]
-        GW[gateway-api<br/>REST + Priority Queue]
-        N2[(NATS<br/>herald.deliver)]
-        DW[delivery-worker<br/>Telegram/Slack/Webhook/Email]
-    end
-
-    subgraph Infrastructure
-        PG[(PostgreSQL)]
-        RD[(Redis)]
-        JG[Jaeger]
-        PR[Prometheus + Grafana]
-    end
-
-    A1 -->|gRPC + Protobuf| EC
-    EC -->|publish| K1
-    K1 -->|consume| EP
-    EP -->|enrich + correlate| PG
-    EP -->|alerts| K2
-    K2 -->|consume| AM
-    AM -->|NATS JetStream| ND
-
-    GW -->|priority queue| N2
-    N2 -->|consume| DW
-
-    EC -.->|dedup| RD
-    EP -.->|traces| JG
-    AM -.->|metrics| PR
+```
+sentinel-agent  ──gRPC+Protobuf──▶  event-collector  ──Kafka(raw-events)──▶  event-processor
+   13MB binary                         Redis dedup                              Worker pool
+                                                                                Rule engine
+                                                                                GeoIP + threat intel
+                                                                                      │
+                                                                               Kafka(alerts)
+                                                                                      │
+                                                                                      ▼
+                                                                             alert-manager
+                                                                         Circuit Breaker + Rate Limiter
+                                                                                      │
+                                                                               NATS JetStream
+                                                                                      │
+                                                                                      ▼
+                                                                        notification-dispatcher
+                                                                            Webhook + DLQ
 ```
 
 ## Key Features
 
-### Sentinel — Security Event Processing
-- **Sub-100ms latency** from event ingestion to alert
+- **Sub-100ms latency** from event ingestion to alert delivery
 - **Correlation Rule Engine** with 3 rule types:
   - Single-event rules (field matching, regex)
   - Temporal threshold (sliding window: "5 failures from same IP in 60s")
   - Sequence detection (kill chain: "brute force → login → escalation")
-- **Enrichment pipeline**: GeoIP + threat intelligence lookup
-- **Severity classification**: automatic CRITICAL/HIGH/MEDIUM/LOW
+- **Enrichment pipeline**: GeoIP lookup + threat intelligence
+- **Severity classification**: automatic CRITICAL / HIGH / MEDIUM / LOW
 - **Forensics Replay API**: re-run historical events with new rules via SSE streaming
-- **Hot rule reload**: update YAML rules without restart
+- **Hot rule reload**: update YAML rules without restart (NATS KV Store)
+- **Behavioral baseline**: statistical anomaly detection without ML frameworks
+- **Full observability**: Prometheus metrics, Jaeger distributed tracing, Grafana dashboards
 
-### Herald — Notification Gateway
-- **Priority Queue** with SLA: CRITICAL <1s, HIGH <10s, NORMAL <60s, LOW best-effort
-  - Custom heap implementation (Push: 103ns, Pop: 17ns)
-- **5 delivery channels**: Webhook (HMAC-SHA256), Telegram Bot, Slack, Email, Log
-- **Alert fatigue prevention**: deduplication, rate limiting, digest mode
-- **Delivery analytics**: per-channel success rate, latency tracking
+## Comparison
 
-### Shared Libraries (`pkg/`)
-- **Circuit Breaker**: custom state machine (7.7M ops/sec, 0 allocs)
-- **Token Bucket Rate Limiter**: lock-free (4M ops/sec, 0 allocs)
-- **Retry**: exponential backoff + jitter, context-aware
-- **Dead Letter Queue**: interface + in-memory implementation
+| Criterion | ELK Stack | MaxPatrol / KUMA | INCH |
+|-----------|-----------|------------------|------|
+| Runtime | Java + JVM | Java / C# | Pure Go binary |
+| Agent memory | Filebeat: 100–300 MB | 150–500 MB | **<15 MB** |
+| Event → alert latency | seconds (batch) | 1–5s | **<100ms** |
+| Architecture | Monolith + plugins | Closed monolith | Microservices |
+| Deployment | Complex | Installer-based | **Kubernetes-first, Helm** |
+| License | BSL (non-OSS since 2021) | Commercial | **MIT** |
 
 ## Performance
 
-| Metric | Value |
-|--------|-------|
-| Rule Engine (single rule) | 12M evaluations/sec (82 ns/op) |
-| Rule Engine (threshold) | 180K evaluations/sec (5.5 µs/op) |
-| Circuit Breaker (closed) | 7.7M ops/sec (134 ns/op, 0 allocs) |
-| Circuit Breaker (open) | 13M ops/sec (89 ns/op, 0 allocs) |
-| Rate Limiter | 4M ops/sec (247 ns/op, 0 allocs) |
-| Priority Queue (push+pop) | 57M ops/sec (17 ns/op) |
-| Agent binary size | 13 MB |
+Benchmarks run on Apple M4 (`go test -bench=. -benchmem -count=3`):
+
+| Component | Throughput | Latency | Allocs |
+|-----------|-----------|---------|--------|
+| Circuit Breaker (closed state) | ~7.2M ops/sec | 138 ns/op | 0 |
+| Circuit Breaker (open state) | ~11M ops/sec | 91 ns/op | 0 |
+| Rate Limiter (token bucket) | ~4M ops/sec | 246 ns/op | 0 |
+| Priority Queue push+pop | ~51M ops/sec | 19.6 ns/op | 0 |
+| Agent binary size | — | — | 13 MB |
 
 ## Tech Stack
 
 | Component | Technology | Why |
 |-----------|-----------|-----|
-| Language | Go 1.25+ | Low memory, fast binaries, native concurrency |
-| Transport | gRPC + Protobuf | Binary serialization (3-10x smaller than JSON), strict schema |
+| Language | Go 1.26 | Low memory, fast binaries, native concurrency |
+| Transport | gRPC + Protobuf | Binary serialization (3–10x smaller than JSON), strict schema |
 | Event Bus | Kafka (franz-go) | High-throughput log with retention for forensics replay |
-| Alert Bus | NATS JetStream | Low-latency fan-out, simpler ops than Kafka |
-| Database | PostgreSQL (pgx) | JSONB for flexible enrichment, partitioned tables |
-| Cache | Redis | Deduplication (SET NX), rate limiter state |
-| Tracing | OpenTelemetry + Jaeger | End-to-end distributed tracing across all services |
-| Metrics | Prometheus + Grafana | Custom dashboards with SLA tracking |
-| CI | GitHub Actions | Lint (golangci-lint) + test + build on every push |
+| Alert Bus | NATS JetStream | Low-latency fan-out, simpler ops than Kafka for alert delivery |
+| Database | PostgreSQL (pgx) | JSONB for flexible enrichment, native driver (no ORM) |
+| Cache | Redis | Deduplication (SET NX + TTL), rate limiter state, baseline windows |
+| Tracing | OpenTelemetry + Jaeger | End-to-end trace ID propagated across gRPC → Kafka → NATS |
+| Metrics | Prometheus + Grafana | Custom dashboards, SLA tracking, worker pool saturation |
+| CI | GitHub Actions | Lint → test (-race) → build on every push |
 
 ## Quick Start
 
@@ -114,10 +86,10 @@ graph TB
 # Start infrastructure (PostgreSQL, Redis, Kafka, NATS, Jaeger, Prometheus, Grafana)
 docker-compose -f docker-compose.infra.yml up -d
 
-# Build all 7 services
+# Build all 5 services
 make build
 
-# Run tests (60+ unit tests)
+# Run unit tests
 make test
 
 # Run benchmarks
@@ -130,10 +102,10 @@ make lint
 ## Project Structure
 
 ```
-├── pkg/                     Shared Go libraries
-│   ├── circuitbreaker/      Circuit Breaker pattern (custom, no libs)
-│   ├── ratelimiter/         Token Bucket rate limiter (lock-free)
-│   ├── retry/               Exponential backoff + jitter
+├── pkg/                     Shared Go libraries (importable independently)
+│   ├── circuitbreaker/      Circuit Breaker — custom state machine, zero-allocation
+│   ├── ratelimiter/         Token Bucket rate limiter — lock-free
+│   ├── retry/               Exponential backoff + jitter, context-aware
 │   ├── dlq/                 Dead Letter Queue abstraction
 │   ├── observability/       Logging (zap) + metrics (Prometheus) + tracing (OTel)
 │   ├── health/              Kubernetes liveness/readiness probes
@@ -144,56 +116,36 @@ make lint
 │   └── natsutil/            NATS JetStream helpers
 ├── proto/                   Protobuf definitions (buf)
 ├── gen/                     Generated Go code from proto
-├── sentinel/                Security event processing platform
+├── inch/                    Security event processing platform
 │   ├── cmd/                 5 service entry points
-│   ├── internal/
-│   │   ├── collector/       gRPC server, Redis dedup, Kafka publish
-│   │   ├── processor/       Worker pool, enrichment, severity
-│   │   │   ├── enrichment/  GeoIP + threat intelligence pipeline
-│   │   │   └── rules/       Correlation rule engine (DSL, temporal, sequence)
-│   │   ├── alertmgr/        Dedup, rate limit, circuit breaker, routing
-│   │   ├── dispatcher/      Webhook (HMAC), retry, DLQ
-│   │   ├── agent/           Log tailer, process watcher, batcher
-│   │   └── replay/          Forensics replay API (SSE streaming)
+│   └── internal/
+│       ├── collector/       gRPC server, Redis dedup, Kafka publish
+│       ├── processor/       Worker pool, enrichment, severity classification
+│       │   ├── enrichment/  GeoIP + threat intelligence pipeline
+│       │   └── rules/       Correlation rule engine (single, temporal, sequence)
+│       ├── alertmgr/        Dedup, rate limit, circuit breaker, routing
+│       ├── dispatcher/      Webhook delivery, retry, DLQ
+│       ├── agent/           Log tailer, process watcher, batcher, backpressure
+│       └── replay/          Forensics replay API (SSE streaming)
 │   ├── migrations/          PostgreSQL schema (goose)
 │   └── rules/               Example YAML correlation rules
-├── herald/                  Smart notification gateway
-│   ├── cmd/                 2 service entry points
-│   └── internal/
-│       ├── gateway/         REST API (chi), priority queue (heap)
-│       ├── delivery/        Worker + channel interface
-│       │   └── channels/    Webhook, Telegram, Slack, Log
-│       └── analytics/       Delivery stats API
 ├── loadtest/                k6 performance tests
 └── grafana/                 Dashboard JSON exports
 ```
-
-## Design Decisions
-
-| Decision | Rationale |
-|----------|-----------|
-| Kafka for events, NATS for alerts | Kafka: high-throughput + retention for replay. NATS: low-latency + simpler ops for lightweight alert delivery |
-| Custom circuit breaker, not a library | Demonstrates understanding of the pattern. Zero-allocation, 7.7M ops/sec |
-| Protobuf over JSON for agent→collector | 3-10x smaller on wire, strict schema catches errors at compile time |
-| Worker pool, not goroutine-per-event | Bounded resource usage, natural backpressure via channel buffer |
-| Heap-based priority queue from scratch | Shows algorithm knowledge. container/heap requires interface adapters — our version is cleaner |
-| Rule engine with YAML DSL | Security teams can add rules without code changes. Hot reload without restart |
 
 ## Services
 
 | Service | Port | Protocol | Description |
 |---------|------|----------|-------------|
-| sentinel-agent | — | gRPC client | Collects events from host (logs, processes) |
-| event-collector | 50051 | gRPC | Receives events, dedup, publish to Kafka |
-| event-processor | 8082 | metrics | Enriches events, evaluates rules, persists |
-| alert-manager | 8083 | metrics | Dedup + rate limit + route alerts |
-| notification-dispatcher | 8084 | metrics | Delivers alerts (Webhook, Log) |
-| gateway-api | 8090 | REST | Herald notification API + priority queue |
-| delivery-worker | 8092 | metrics | Herald delivery (Telegram, Slack, Webhook) |
+| sentinel-agent | — | gRPC client | Collects events from host (logs, processes, network) |
+| event-collector | 50051 | gRPC | Receives events, dedup via Redis, publish to Kafka |
+| event-processor | 8082 | HTTP metrics | Enriches events, evaluates correlation rules, persists |
+| alert-manager | 8083 | HTTP metrics | Dedup + rate limit + circuit breaker + route alerts |
+| notification-dispatcher | 8084 | HTTP metrics | Delivers alerts via Webhook with retry and DLQ |
 
 ## Correlation Rules
 
-Rules are defined in YAML and support hot reload:
+Rules are defined in YAML and support hot reload without restart:
 
 ```yaml
 # Detect SSH brute force attacks
@@ -214,7 +166,7 @@ severity: HIGH
 ```
 
 ```yaml
-# Detect kill chain: brute force → login → escalation
+# Detect kill chain: brute force → successful login → privilege escalation
 id: lateral-movement
 name: Lateral Movement Detection
 type: sequence
@@ -232,6 +184,18 @@ steps:
       - { field: type, op: eq, value: EVENT_TYPE_PRIVILEGE_ESCALATION }
     count: 1
 ```
+
+## Design Decisions
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for full rationale.
+
+| Decision | Rationale |
+|----------|-----------|
+| Kafka for events, NATS for alerts | Kafka: high-throughput + retention for forensics replay. NATS: low-latency + simpler ops for alert fan-out |
+| Custom circuit breaker, not a library | Zero-allocation, 7.2M ops/sec. Shows pattern understanding, not just library usage |
+| Protobuf over JSON for agent→collector | 3–10x smaller on wire, schema validated at compile time |
+| Worker pool with bounded channel | Natural backpressure — Kafka consumer pauses when workers are saturated |
+| Rule engine with YAML DSL | Security teams update rules without code changes. Hot reload via NATS KV |
 
 ## License
 
