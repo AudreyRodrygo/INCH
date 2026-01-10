@@ -18,13 +18,19 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version-file: pkg/go.mod
+          go-version-file: go.work
+          cache-dependency-path: |
+            pkg/go.sum
+            inch/go.sum
+            gen/go.sum
 
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: latest
-          args: ./pkg/... ./inch/...
+      - name: Install golangci-lint
+        run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Run lint
+        run: |
+          (cd pkg  && golangci-lint run ./...)
+          (cd inch && golangci-lint run ./...)
 
   test:
     name: Test
@@ -34,7 +40,11 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version-file: pkg/go.mod
+          go-version-file: go.work
+          cache-dependency-path: |
+            pkg/go.sum
+            inch/go.sum
+            gen/go.sum
 
       - name: Run tests
         run: go test ./pkg/... ./inch/... -count=1 -race -timeout 60s
@@ -48,7 +58,11 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version-file: pkg/go.mod
+          go-version-file: go.work
+          cache-dependency-path: |
+            pkg/go.sum
+            inch/go.sum
+            gen/go.sum
 
       - name: Build all services
         run: make build
