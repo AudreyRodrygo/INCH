@@ -11,12 +11,12 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/AudreyRodrygo/Inch/inch/internal/alertmgr"
 	"github.com/AudreyRodrygo/Inch/pkg/config"
 	"github.com/AudreyRodrygo/Inch/pkg/health"
 	"github.com/AudreyRodrygo/Inch/pkg/kafkautil"
 	"github.com/AudreyRodrygo/Inch/pkg/natsutil"
 	"github.com/AudreyRodrygo/Inch/pkg/observability"
-	"github.com/AudreyRodrygo/Inch/inch/internal/alertmgr"
 )
 
 const serviceName = "alert-manager"
