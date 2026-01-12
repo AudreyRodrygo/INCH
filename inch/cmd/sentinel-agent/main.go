@@ -12,9 +12,9 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	pb "github.com/AudreyRodrygo/Inch/gen/sentinel/v1"
+	"github.com/AudreyRodrygo/Inch/inch/internal/agent"
 	"github.com/AudreyRodrygo/Inch/pkg/config"
 	"github.com/AudreyRodrygo/Inch/pkg/observability"
-	"github.com/AudreyRodrygo/Inch/inch/internal/agent"
 )
 
 const serviceName = "sentinel-agent"

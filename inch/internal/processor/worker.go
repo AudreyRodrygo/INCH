@@ -14,9 +14,9 @@ import (
 	"github.com/twmb/franz-go/pkg/kgo"
 
 	pb "github.com/AudreyRodrygo/Inch/gen/sentinel/v1"
-	"github.com/AudreyRodrygo/Inch/pkg/observability"
 	"github.com/AudreyRodrygo/Inch/inch/internal/processor/enrichment"
 	"github.com/AudreyRodrygo/Inch/inch/internal/processor/rules"
+	"github.com/AudreyRodrygo/Inch/pkg/observability"
 )
 
 // Pool manages a fixed number of worker goroutines that process events

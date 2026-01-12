@@ -10,12 +10,12 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/AudreyRodrygo/Inch/inch/internal/dispatcher"
 	"github.com/AudreyRodrygo/Inch/pkg/config"
 	"github.com/AudreyRodrygo/Inch/pkg/dlq"
 	"github.com/AudreyRodrygo/Inch/pkg/health"
 	"github.com/AudreyRodrygo/Inch/pkg/natsutil"
 	"github.com/AudreyRodrygo/Inch/pkg/observability"
-	"github.com/AudreyRodrygo/Inch/inch/internal/dispatcher"
 )
 
 const serviceName = "notification-dispatcher"
