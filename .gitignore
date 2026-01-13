@@ -6,6 +6,14 @@
 *.dylib
 bin/
 dist/
+event-collector
+event-processor
+alert-manager
+notification-dispatcher
+sentinel-agent
+
+# Claude Code context file
+CLAUDE.md
 
 # Test
 *.test
