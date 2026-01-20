@@ -1,0 +1,122 @@
+image:
+  registry: ghcr.io/audreyrodrygo
+  pullPolicy: IfNotPresent
+
+# ─── Event Collector ────────────────────────────────────────────────────────
+collector:
+  image:
+    name: inch-collector
+    tag: latest
+  replicas: 2
+  port: 50051
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+  config:
+    kafkaBrokers: "kafka:9092"
+    kafkaTopic: "security-events"
+    dedupWindowSec: 60
+
+# ─── Event Processor ────────────────────────────────────────────────────────
+processor:
+  image:
+    name: inch-processor
+    tag: latest
+  replicas: 3
+  resources:
+    requests:
+      cpu: 200m
+      memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+  config:
+    kafkaBrokers: "kafka:9092"
+    kafkaTopic: "security-events"
+    kafkaGroupId: "inch-processor"
+    natsUrl: "nats://nats:4222"
+    rulesDir: "/etc/inch/rules"
+    redisAddr: "redis:6379"
+
+# ─── Alert Manager ──────────────────────────────────────────────────────────
+alertManager:
+  image:
+    name: inch-alertmgr
+    tag: latest
+  replicas: 1
+  port: 8080
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 128Mi
+  config:
+    natsUrl: "nats://nats:4222"
+    postgresUrl: "postgres://sentinel:sentinel@postgres:5432/sentinel"
+
+# ─── Notification Dispatcher ────────────────────────────────────────────────
+dispatcher:
+  image:
+    name: inch-dispatcher
+    tag: latest
+  replicas: 2
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 128Mi
+  config:
+    natsUrl: "nats://nats:4222"
+
+# ─── Sentinel Agent ─────────────────────────────────────────────────────────
+# Runs as DaemonSet — one instance per cluster node for host-level collection
+agent:
+  image:
+    name: inch-agent
+    tag: latest
+  resources:
+    requests:
+      cpu: 50m
+      memory: 32Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  config:
+    collectorAddr: "inch-collector:50051"
+    batchSize: 100
+    flushIntervalMs: 500
+
+# ─── Shared infrastructure ──────────────────────────────────────────────────
+kafka:
+  brokers: "kafka:9092"
+
+nats:
+  url: "nats://nats:4222"
+
+redis:
+  addr: "redis:6379"
+
+postgres:
+  url: "postgres://sentinel:sentinel@postgres:5432/sentinel"
+
+# ─── Ingress ────────────────────────────────────────────────────────────────
+ingress:
+  enabled: false
+  className: nginx
+  host: inch.example.com
+  tls: false
+
+# ─── Observability ──────────────────────────────────────────────────────────
+metrics:
+  enabled: true
+  port: 9090
+  serviceMonitor:
+    enabled: false   # set true if Prometheus Operator is installed

@@ -1,0 +1,50 @@
+---
+# Sentinel Agent runs as a DaemonSet: one pod per node for host-level event collection
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "inch.fullname" . }}-agent
+  labels:
+    {{- include "inch.labels" . | nindent 4 }}
+    app.kubernetes.io/component: agent
+spec:
+  selector:
+    matchLabels:
+      {{- include "inch.selectorLabels" (dict "name" "agent" "root" .) | nindent 6 }}
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        {{- include "inch.selectorLabels" (dict "name" "agent" "root" .) | nindent 8 }}
+    spec:
+      # hostPID required for process-level event collection
+      hostPID: true
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: agent
+          image: {{ include "inch.image" (dict "cfg" .Values.agent "root" .) }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+          env:
+            - name: AGENT_COLLECTOR_ADDR
+              value: {{ printf "%s-collector:%d" (include "inch.fullname" .) (.Values.collector.port | int) | quote }}
+            - name: AGENT_BATCH_SIZE
+              value: {{ .Values.agent.config.batchSize | quote }}
+            - name: AGENT_FLUSH_INTERVAL_MS
+              value: {{ .Values.agent.config.flushIntervalMs | quote }}
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          resources:
+            {{- toYaml .Values.agent.resources | nindent 12 }}
