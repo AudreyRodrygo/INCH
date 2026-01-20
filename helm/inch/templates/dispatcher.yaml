@@ -1,0 +1,27 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "inch.fullname" . }}-dispatcher
+  labels:
+    {{- include "inch.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dispatcher
+spec:
+  replicas: {{ .Values.dispatcher.replicas }}
+  selector:
+    matchLabels:
+      {{- include "inch.selectorLabels" (dict "name" "dispatcher" "root" .) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "inch.selectorLabels" (dict "name" "dispatcher" "root" .) | nindent 8 }}
+    spec:
+      containers:
+        - name: dispatcher
+          image: {{ include "inch.image" (dict "cfg" .Values.dispatcher "root" .) }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: DISPATCHER_NATS_URL
+              value: {{ .Values.dispatcher.config.natsUrl | quote }}
+          resources:
+            {{- toYaml .Values.dispatcher.resources | nindent 12 }}

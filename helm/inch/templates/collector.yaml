@@ -1,0 +1,72 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "inch.fullname" . }}-collector
+  labels:
+    {{- include "inch.labels" . | nindent 4 }}
+    app.kubernetes.io/component: collector
+spec:
+  replicas: {{ .Values.collector.replicas }}
+  selector:
+    matchLabels:
+      {{- include "inch.selectorLabels" (dict "name" "collector" "root" .) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "inch.selectorLabels" (dict "name" "collector" "root" .) | nindent 8 }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.metrics.port }}"
+    spec:
+      containers:
+        - name: collector
+          image: {{ include "inch.image" (dict "cfg" .Values.collector "root" .) }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: grpc
+              containerPort: {{ .Values.collector.port }}
+              protocol: TCP
+            {{- if .Values.metrics.enabled }}
+            - name: metrics
+              containerPort: {{ .Values.metrics.port }}
+              protocol: TCP
+            {{- end }}
+          env:
+            - name: COLLECTOR_KAFKA_BROKERS
+              value: {{ .Values.collector.config.kafkaBrokers | quote }}
+            - name: COLLECTOR_KAFKA_TOPIC
+              value: {{ .Values.collector.config.kafkaTopic | quote }}
+            - name: COLLECTOR_DEDUP_WINDOW_SEC
+              value: {{ .Values.collector.config.dedupWindowSec | quote }}
+            - name: REDIS_ADDR
+              value: {{ .Values.redis.addr | quote }}
+          livenessProbe:
+            grpc:
+              port: {{ .Values.collector.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            grpc:
+              port: {{ .Values.collector.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.collector.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "inch.fullname" . }}-collector
+  labels:
+    {{- include "inch.labels" . | nindent 4 }}
+    app.kubernetes.io/component: collector
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "inch.selectorLabels" (dict "name" "collector" "root" .) | nindent 4 }}
+  ports:
+    - name: grpc
+      port: {{ .Values.collector.port }}
+      targetPort: grpc
+      protocol: TCP

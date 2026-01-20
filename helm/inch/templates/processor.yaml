@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "inch.fullname" . }}-processor
+  labels:
+    {{- include "inch.labels" . | nindent 4 }}
+    app.kubernetes.io/component: processor
+spec:
+  replicas: {{ .Values.processor.replicas }}
+  selector:
+    matchLabels:
+      {{- include "inch.selectorLabels" (dict "name" "processor" "root" .) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "inch.selectorLabels" (dict "name" "processor" "root" .) | nindent 8 }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.metrics.port }}"
+    spec:
+      containers:
+        - name: processor
+          image: {{ include "inch.image" (dict "cfg" .Values.processor "root" .) }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.metrics.enabled }}
+          ports:
+            - name: metrics
+              containerPort: {{ .Values.metrics.port }}
+              protocol: TCP
+          {{- end }}
+          env:
+            - name: PROCESSOR_KAFKA_BROKERS
+              value: {{ .Values.processor.config.kafkaBrokers | quote }}
+            - name: PROCESSOR_KAFKA_TOPIC
+              value: {{ .Values.processor.config.kafkaTopic | quote }}
+            - name: PROCESSOR_KAFKA_GROUP_ID
+              value: {{ .Values.processor.config.kafkaGroupId | quote }}
+            - name: PROCESSOR_NATS_URL
+              value: {{ .Values.processor.config.natsUrl | quote }}
+            - name: PROCESSOR_RULES_DIR
+              value: {{ .Values.processor.config.rulesDir | quote }}
+            - name: REDIS_ADDR
+              value: {{ .Values.redis.addr | quote }}
+          volumeMounts:
+            - name: rules
+              mountPath: /etc/inch/rules
+              readOnly: true
+          resources:
+            {{- toYaml .Values.processor.resources | nindent 12 }}
+      volumes:
+        - name: rules
+          configMap:
+            name: {{ include "inch.fullname" . }}-rules

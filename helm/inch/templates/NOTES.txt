@@ -1,0 +1,21 @@
+INCH has been deployed.
+
+Components running:
+  - event-collector  (Deployment, {{ .Values.collector.replicas }} replicas) — gRPC :{{ .Values.collector.port }}
+  - event-processor  (Deployment, {{ .Values.processor.replicas }} replicas) — Kafka consumer
+  - alert-manager    (Deployment, {{ .Values.alertManager.replicas }} replica)  — HTTP :{{ .Values.alertManager.port }}
+  - dispatcher       (Deployment, {{ .Values.dispatcher.replicas }} replicas) — NATS consumer
+  - sentinel-agent   (DaemonSet)                                — host-level collection
+
+Collector gRPC endpoint (cluster-internal):
+  {{ include "inch.fullname" . }}-collector:{{ .Values.collector.port }}
+
+Alert Manager API:
+  {{ include "inch.fullname" . }}-alertmgr:{{ .Values.alertManager.port }}
+
+To forward the alert manager port locally:
+  kubectl port-forward svc/{{ include "inch.fullname" . }}-alertmgr {{ .Values.alertManager.port }}:{{ .Values.alertManager.port }}
+
+Correlation rules are loaded from ConfigMap {{ include "inch.fullname" . }}-rules.
+Update rules without restarting pods:
+  kubectl create configmap {{ include "inch.fullname" . }}-rules --from-file=inch/rules/ --dry-run=client -o yaml | kubectl apply -f -
