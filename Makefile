@@ -4,7 +4,7 @@ all: lint test build
 
 # ─── Build ──────────────────────────────────────────────────────────────────
 
-SERVICES := event-collector event-processor alert-manager notification-dispatcher sentinel-agent
+SERVICES := event-collector event-processor alert-manager notification-dispatcher inch-agent
 BIN_DIR := bin
 LDFLAGS := -ldflags="-s -w"
 

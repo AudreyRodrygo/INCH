@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	pb "github.com/AudreyRodrygo/Inch/gen/sentinel/v1"
+	pb "github.com/AudreyRodrygo/Inch/gen/inch/v1"
 )
 
 // MatchesConditions checks if an event satisfies ALL conditions of a rule.

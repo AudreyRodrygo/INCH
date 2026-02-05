@@ -3,7 +3,7 @@ package agent
 import (
 	"context"
 
-	pb "github.com/AudreyRodrygo/Inch/gen/sentinel/v1"
+	pb "github.com/AudreyRodrygo/Inch/gen/inch/v1"
 )
 
 // Source is an interface for event collection backends.

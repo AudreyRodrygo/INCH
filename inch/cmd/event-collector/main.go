@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
-	pb "github.com/AudreyRodrygo/Inch/gen/sentinel/v1"
+	pb "github.com/AudreyRodrygo/Inch/gen/inch/v1"
 	"github.com/AudreyRodrygo/Inch/inch/internal/collector"
 	"github.com/AudreyRodrygo/Inch/pkg/config"
 	"github.com/AudreyRodrygo/Inch/pkg/health"

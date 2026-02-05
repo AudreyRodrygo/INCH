@@ -5,7 +5,7 @@ Components running:
   - event-processor  (Deployment, {{ .Values.processor.replicas }} replicas) — Kafka consumer
   - alert-manager    (Deployment, {{ .Values.alertManager.replicas }} replica)  — HTTP :{{ .Values.alertManager.port }}
   - dispatcher       (Deployment, {{ .Values.dispatcher.replicas }} replicas) — NATS consumer
-  - sentinel-agent   (DaemonSet)                                — host-level collection
+  - inch-agent   (DaemonSet)                                — host-level collection
 
 Collector gRPC endpoint (cluster-internal):
   {{ include "inch.fullname" . }}-collector:{{ .Values.collector.port }}

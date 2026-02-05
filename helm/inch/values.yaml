@@ -58,7 +58,7 @@ alertManager:
       memory: 128Mi
   config:
     natsUrl: "nats://nats:4222"
-    postgresUrl: "postgres://sentinel:sentinel@postgres:5432/sentinel"
+    postgresUrl: "postgres://inch:inch@postgres:5432/inch"
 
 # ─── Notification Dispatcher ────────────────────────────────────────────────
 dispatcher:
@@ -105,7 +105,7 @@ redis:
   addr: "redis:6379"
 
 postgres:
-  url: "postgres://sentinel:sentinel@postgres:5432/sentinel"
+  url: "postgres://inch:inch@postgres:5432/inch"
 
 # ─── Ingress ────────────────────────────────────────────────────────────────
 ingress:

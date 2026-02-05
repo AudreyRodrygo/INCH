@@ -22,7 +22,7 @@ package enrichment
 import (
 	"context"
 
-	pb "github.com/AudreyRodrygo/Inch/gen/sentinel/v1"
+	pb "github.com/AudreyRodrygo/Inch/gen/inch/v1"
 )
 
 // Enricher adds contextual information to a security event.

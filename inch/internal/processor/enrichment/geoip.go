@@ -4,7 +4,7 @@ import (
 	"context"
 	"net"
 
-	pb "github.com/AudreyRodrygo/Inch/gen/sentinel/v1"
+	pb "github.com/AudreyRodrygo/Inch/gen/inch/v1"
 )
 
 // GeoIP enriches events with geographic information based on IP addresses.

@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        (unknown)
-// source: sentinel/v1/event.proto
+// source: inch/v1/event.proto
 
-package sentinelv1
+package inchv1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -62,11 +62,11 @@ func (x Severity) String() string {
 }
 
 func (Severity) Descriptor() protoreflect.EnumDescriptor {
-	return file_sentinel_v1_event_proto_enumTypes[0].Descriptor()
+	return file_inch_v1_event_proto_enumTypes[0].Descriptor()
 }
 
 func (Severity) Type() protoreflect.EnumType {
-	return &file_sentinel_v1_event_proto_enumTypes[0]
+	return &file_inch_v1_event_proto_enumTypes[0]
 }
 
 func (x Severity) Number() protoreflect.EnumNumber {
@@ -75,7 +75,7 @@ func (x Severity) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Severity.Descriptor instead.
 func (Severity) EnumDescriptor() ([]byte, []int) {
-	return file_sentinel_v1_event_proto_rawDescGZIP(), []int{0}
+	return file_inch_v1_event_proto_rawDescGZIP(), []int{0}
 }
 
 // EventType categorizes security events.
@@ -136,11 +136,11 @@ func (x EventType) String() string {
 }
 
 func (EventType) Descriptor() protoreflect.EnumDescriptor {
-	return file_sentinel_v1_event_proto_enumTypes[1].Descriptor()
+	return file_inch_v1_event_proto_enumTypes[1].Descriptor()
 }
 
 func (EventType) Type() protoreflect.EnumType {
-	return &file_sentinel_v1_event_proto_enumTypes[1]
+	return &file_inch_v1_event_proto_enumTypes[1]
 }
 
 func (x EventType) Number() protoreflect.EnumNumber {
@@ -149,7 +149,7 @@ func (x EventType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use EventType.Descriptor instead.
 func (EventType) EnumDescriptor() ([]byte, []int) {
-	return file_sentinel_v1_event_proto_rawDescGZIP(), []int{1}
+	return file_inch_v1_event_proto_rawDescGZIP(), []int{1}
 }
 
 // SecurityEvent represents a single security event collected by an agent.
@@ -158,7 +158,7 @@ type SecurityEvent struct {
 	// Unique identifier for deduplication (idempotency key).
 	EventId string `protobuf:"bytes,1,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
 	// Type of the security event.
-	Type EventType `protobuf:"varint,2,opt,name=type,proto3,enum=sentinel.v1.EventType" json:"type,omitempty"`
+	Type EventType `protobuf:"varint,2,opt,name=type,proto3,enum=inch.v1.EventType" json:"type,omitempty"`
 	// When the event occurred on the source system.
 	Timestamp *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	// Hostname of the machine that generated the event.
@@ -184,14 +184,14 @@ type SecurityEvent struct {
 	// Agent that collected this event.
 	AgentId string `protobuf:"bytes,14,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
 	// Severity assigned at collection time (may be overridden by processor).
-	Severity      Severity `protobuf:"varint,15,opt,name=severity,proto3,enum=sentinel.v1.Severity" json:"severity,omitempty"`
+	Severity      Severity `protobuf:"varint,15,opt,name=severity,proto3,enum=inch.v1.Severity" json:"severity,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SecurityEvent) Reset() {
 	*x = SecurityEvent{}
-	mi := &file_sentinel_v1_event_proto_msgTypes[0]
+	mi := &file_inch_v1_event_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -203,7 +203,7 @@ func (x *SecurityEvent) String() string {
 func (*SecurityEvent) ProtoMessage() {}
 
 func (x *SecurityEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_sentinel_v1_event_proto_msgTypes[0]
+	mi := &file_inch_v1_event_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -216,7 +216,7 @@ func (x *SecurityEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SecurityEvent.ProtoReflect.Descriptor instead.
 func (*SecurityEvent) Descriptor() ([]byte, []int) {
-	return file_sentinel_v1_event_proto_rawDescGZIP(), []int{0}
+	return file_inch_v1_event_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *SecurityEvent) GetEventId() string {
@@ -338,7 +338,7 @@ type EventBatch struct {
 
 func (x *EventBatch) Reset() {
 	*x = EventBatch{}
-	mi := &file_sentinel_v1_event_proto_msgTypes[1]
+	mi := &file_inch_v1_event_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -350,7 +350,7 @@ func (x *EventBatch) String() string {
 func (*EventBatch) ProtoMessage() {}
 
 func (x *EventBatch) ProtoReflect() protoreflect.Message {
-	mi := &file_sentinel_v1_event_proto_msgTypes[1]
+	mi := &file_inch_v1_event_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -363,7 +363,7 @@ func (x *EventBatch) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EventBatch.ProtoReflect.Descriptor instead.
 func (*EventBatch) Descriptor() ([]byte, []int) {
-	return file_sentinel_v1_event_proto_rawDescGZIP(), []int{1}
+	return file_inch_v1_event_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *EventBatch) GetEvents() []*SecurityEvent {
@@ -387,14 +387,14 @@ func (x *EventBatch) GetSequence() uint64 {
 	return 0
 }
 
-var File_sentinel_v1_event_proto protoreflect.FileDescriptor
+var File_inch_v1_event_proto protoreflect.FileDescriptor
 
-const file_sentinel_v1_event_proto_rawDesc = "" +
+const file_inch_v1_event_proto_rawDesc = "" +
 	"\n" +
-	"\x17sentinel/v1/event.proto\x12\vsentinel.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf6\x04\n" +
+	"\x13inch/v1/event.proto\x12\ainch.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xea\x04\n" +
 	"\rSecurityEvent\x12\x19\n" +
-	"\bevent_id\x18\x01 \x01(\tR\aeventId\x12*\n" +
-	"\x04type\x18\x02 \x01(\x0e2\x16.sentinel.v1.EventTypeR\x04type\x128\n" +
+	"\bevent_id\x18\x01 \x01(\tR\aeventId\x12&\n" +
+	"\x04type\x18\x02 \x01(\x0e2\x12.inch.v1.EventTypeR\x04type\x128\n" +
 	"\ttimestamp\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\x12\x1a\n" +
 	"\bhostname\x18\x04 \x01(\tR\bhostname\x12\x1b\n" +
 	"\tsource_ip\x18\x05 \x01(\tR\bsourceIp\x12%\n" +
@@ -407,16 +407,16 @@ const file_sentinel_v1_event_proto_rawDesc = "" +
 	" \x01(\tR\aprocess\x12\x18\n" +
 	"\aservice\x18\v \x01(\tR\aservice\x12\x1f\n" +
 	"\vraw_message\x18\f \x01(\tR\n" +
-	"rawMessage\x12D\n" +
-	"\bmetadata\x18\r \x03(\v2(.sentinel.v1.SecurityEvent.MetadataEntryR\bmetadata\x12\x19\n" +
-	"\bagent_id\x18\x0e \x01(\tR\aagentId\x121\n" +
-	"\bseverity\x18\x0f \x01(\x0e2\x15.sentinel.v1.SeverityR\bseverity\x1a;\n" +
+	"rawMessage\x12@\n" +
+	"\bmetadata\x18\r \x03(\v2$.inch.v1.SecurityEvent.MetadataEntryR\bmetadata\x12\x19\n" +
+	"\bagent_id\x18\x0e \x01(\tR\aagentId\x12-\n" +
+	"\bseverity\x18\x0f \x01(\x0e2\x11.inch.v1.SeverityR\bseverity\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"w\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"s\n" +
 	"\n" +
-	"EventBatch\x122\n" +
-	"\x06events\x18\x01 \x03(\v2\x1a.sentinel.v1.SecurityEventR\x06events\x12\x19\n" +
+	"EventBatch\x12.\n" +
+	"\x06events\x18\x01 \x03(\v2\x16.inch.v1.SecurityEventR\x06events\x12\x19\n" +
 	"\bagent_id\x18\x02 \x01(\tR\aagentId\x12\x1a\n" +
 	"\bsequence\x18\x03 \x01(\x04R\bsequence*u\n" +
 	"\bSeverity\x12\x18\n" +
@@ -437,38 +437,38 @@ const file_sentinel_v1_event_proto_rawDesc = "" +
 	"\x16EVENT_TYPE_FILE_MODIFY\x10\b\x12#\n" +
 	"\x1fEVENT_TYPE_PRIVILEGE_ESCALATION\x10\t\x12\x1a\n" +
 	"\x16EVENT_TYPE_SYSTEM_CALL\x10\n" +
-	"B\xa4\x01\n" +
-	"\x0fcom.sentinel.v1B\n" +
-	"EventProtoP\x01Z8github.com/AudreyRodrygo/Inch/gen/sentinel/v1;sentinelv1\xa2\x02\x03SXX\xaa\x02\vSentinel.V1\xca\x02\vSentinel\\V1\xe2\x02\x17Sentinel\\V1\\GPBMetadata\xea\x02\fSentinel::V1b\x06proto3"
+	"B\x88\x01\n" +
+	"\vcom.inch.v1B\n" +
+	"EventProtoP\x01Z0github.com/AudreyRodrygo/Inch/gen/inch/v1;inchv1\xa2\x02\x03IXX\xaa\x02\aInch.V1\xca\x02\aInch\\V1\xe2\x02\x13Inch\\V1\\GPBMetadata\xea\x02\bInch::V1b\x06proto3"
 
 var (
-	file_sentinel_v1_event_proto_rawDescOnce sync.Once
-	file_sentinel_v1_event_proto_rawDescData []byte
+	file_inch_v1_event_proto_rawDescOnce sync.Once
+	file_inch_v1_event_proto_rawDescData []byte
 )
 
-func file_sentinel_v1_event_proto_rawDescGZIP() []byte {
-	file_sentinel_v1_event_proto_rawDescOnce.Do(func() {
-		file_sentinel_v1_event_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_sentinel_v1_event_proto_rawDesc), len(file_sentinel_v1_event_proto_rawDesc)))
+func file_inch_v1_event_proto_rawDescGZIP() []byte {
+	file_inch_v1_event_proto_rawDescOnce.Do(func() {
+		file_inch_v1_event_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_inch_v1_event_proto_rawDesc), len(file_inch_v1_event_proto_rawDesc)))
 	})
-	return file_sentinel_v1_event_proto_rawDescData
+	return file_inch_v1_event_proto_rawDescData
 }
 
-var file_sentinel_v1_event_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_sentinel_v1_event_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
-var file_sentinel_v1_event_proto_goTypes = []any{
-	(Severity)(0),                 // 0: sentinel.v1.Severity
-	(EventType)(0),                // 1: sentinel.v1.EventType
-	(*SecurityEvent)(nil),         // 2: sentinel.v1.SecurityEvent
-	(*EventBatch)(nil),            // 3: sentinel.v1.EventBatch
-	nil,                           // 4: sentinel.v1.SecurityEvent.MetadataEntry
+var file_inch_v1_event_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_inch_v1_event_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_inch_v1_event_proto_goTypes = []any{
+	(Severity)(0),                 // 0: inch.v1.Severity
+	(EventType)(0),                // 1: inch.v1.EventType
+	(*SecurityEvent)(nil),         // 2: inch.v1.SecurityEvent
+	(*EventBatch)(nil),            // 3: inch.v1.EventBatch
+	nil,                           // 4: inch.v1.SecurityEvent.MetadataEntry
 	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
 }
-var file_sentinel_v1_event_proto_depIdxs = []int32{
-	1, // 0: sentinel.v1.SecurityEvent.type:type_name -> sentinel.v1.EventType
-	5, // 1: sentinel.v1.SecurityEvent.timestamp:type_name -> google.protobuf.Timestamp
-	4, // 2: sentinel.v1.SecurityEvent.metadata:type_name -> sentinel.v1.SecurityEvent.MetadataEntry
-	0, // 3: sentinel.v1.SecurityEvent.severity:type_name -> sentinel.v1.Severity
-	2, // 4: sentinel.v1.EventBatch.events:type_name -> sentinel.v1.SecurityEvent
+var file_inch_v1_event_proto_depIdxs = []int32{
+	1, // 0: inch.v1.SecurityEvent.type:type_name -> inch.v1.EventType
+	5, // 1: inch.v1.SecurityEvent.timestamp:type_name -> google.protobuf.Timestamp
+	4, // 2: inch.v1.SecurityEvent.metadata:type_name -> inch.v1.SecurityEvent.MetadataEntry
+	0, // 3: inch.v1.SecurityEvent.severity:type_name -> inch.v1.Severity
+	2, // 4: inch.v1.EventBatch.events:type_name -> inch.v1.SecurityEvent
 	5, // [5:5] is the sub-list for method output_type
 	5, // [5:5] is the sub-list for method input_type
 	5, // [5:5] is the sub-list for extension type_name
@@ -476,27 +476,27 @@ var file_sentinel_v1_event_proto_depIdxs = []int32{
 	0, // [0:5] is the sub-list for field type_name
 }
 
-func init() { file_sentinel_v1_event_proto_init() }
-func file_sentinel_v1_event_proto_init() {
-	if File_sentinel_v1_event_proto != nil {
+func init() { file_inch_v1_event_proto_init() }
+func file_inch_v1_event_proto_init() {
+	if File_inch_v1_event_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_sentinel_v1_event_proto_rawDesc), len(file_sentinel_v1_event_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_inch_v1_event_proto_rawDesc), len(file_inch_v1_event_proto_rawDesc)),
 			NumEnums:      2,
 			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_sentinel_v1_event_proto_goTypes,
-		DependencyIndexes: file_sentinel_v1_event_proto_depIdxs,
-		EnumInfos:         file_sentinel_v1_event_proto_enumTypes,
-		MessageInfos:      file_sentinel_v1_event_proto_msgTypes,
+		GoTypes:           file_inch_v1_event_proto_goTypes,
+		DependencyIndexes: file_inch_v1_event_proto_depIdxs,
+		EnumInfos:         file_inch_v1_event_proto_enumTypes,
+		MessageInfos:      file_inch_v1_event_proto_msgTypes,
 	}.Build()
-	File_sentinel_v1_event_proto = out.File
-	file_sentinel_v1_event_proto_goTypes = nil
-	file_sentinel_v1_event_proto_depIdxs = nil
+	File_inch_v1_event_proto = out.File
+	file_inch_v1_event_proto_goTypes = nil
+	file_inch_v1_event_proto_depIdxs = nil
 }

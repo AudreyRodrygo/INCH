@@ -7,6 +7,11 @@ scrape_configs:
     static_configs:
       - targets: ["localhost:9090"]
 
+  - job_name: "pushgateway"
+    honor_labels: true
+    static_configs:
+      - targets: ["pushgateway:9091"]
+
   # INCH services
   # - job_name: "event-collector"
   #   static_configs:
