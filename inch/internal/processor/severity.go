@@ -1,7 +1,7 @@
 package processor
 
 import (
-	pb "github.com/AudreyRodrygo/Inch/gen/sentinel/v1"
+	pb "github.com/AudreyRodrygo/Inch/gen/inch/v1"
 )
 
 // ClassifySeverity assigns a severity level to an event based on its type

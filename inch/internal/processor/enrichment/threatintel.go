@@ -3,7 +3,7 @@ package enrichment
 import (
 	"context"
 
-	pb "github.com/AudreyRodrygo/Inch/gen/sentinel/v1"
+	pb "github.com/AudreyRodrygo/Inch/gen/inch/v1"
 )
 
 // ThreatIntel enriches events with threat intelligence data.

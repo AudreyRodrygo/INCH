@@ -7,7 +7,7 @@ import (
 
 	"go.uber.org/zap"
 
-	pb "github.com/AudreyRodrygo/Inch/gen/sentinel/v1"
+	pb "github.com/AudreyRodrygo/Inch/gen/inch/v1"
 	"github.com/AudreyRodrygo/Inch/inch/internal/processor/rules"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

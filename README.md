@@ -80,6 +80,12 @@ Benchmarks run on Apple M4 (`go test -bench=. -benchmem -count=3`):
 | Metrics | Prometheus + Grafana | Custom dashboards, SLA tracking, worker pool saturation |
 | CI | GitHub Actions | Lint → test (-race) → build on every push |
 
+## Observability
+
+![INCH Grafana Dashboard](assets/inch-dashboard.png)
+
+_Events processed/sec · Processing latency P50/P95/P99 · Alerts fired/min · Circuit breaker state · Kafka consumer lag_
+
 ## Quick Start
 
 ```bash

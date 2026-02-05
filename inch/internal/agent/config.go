@@ -1,4 +1,4 @@
-// Package agent implements the sentinel-agent — a lightweight event collector
+// Package agent implements the inch-agent — a lightweight event collector
 // that runs on monitored hosts.
 //
 // The agent collects security events from multiple sources (log files,
@@ -19,7 +19,7 @@
 //	                   or every 100 events
 package agent
 
-// Config holds sentinel-agent configuration.
+// Config holds inch-agent configuration.
 type Config struct {
 	// CollectorAddr is the gRPC address of the event-collector.
 	CollectorAddr string `mapstructure:"collector_addr"`

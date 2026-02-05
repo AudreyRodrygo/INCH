@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        (unknown)
-// source: sentinel/v1/alert.proto
+// source: inch/v1/alert.proto
 
-package sentinelv1
+package inchv1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -32,7 +32,7 @@ type Alert struct {
 	// Human-readable rule name.
 	RuleName string `protobuf:"bytes,3,opt,name=rule_name,json=ruleName,proto3" json:"rule_name,omitempty"`
 	// Alert severity (determined by the rule).
-	Severity Severity `protobuf:"varint,4,opt,name=severity,proto3,enum=sentinel.v1.Severity" json:"severity,omitempty"`
+	Severity Severity `protobuf:"varint,4,opt,name=severity,proto3,enum=inch.v1.Severity" json:"severity,omitempty"`
 	// When the alert was generated.
 	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	// Description of what triggered the alert.
@@ -53,7 +53,7 @@ type Alert struct {
 
 func (x *Alert) Reset() {
 	*x = Alert{}
-	mi := &file_sentinel_v1_alert_proto_msgTypes[0]
+	mi := &file_inch_v1_alert_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -65,7 +65,7 @@ func (x *Alert) String() string {
 func (*Alert) ProtoMessage() {}
 
 func (x *Alert) ProtoReflect() protoreflect.Message {
-	mi := &file_sentinel_v1_alert_proto_msgTypes[0]
+	mi := &file_inch_v1_alert_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -78,7 +78,7 @@ func (x *Alert) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Alert.ProtoReflect.Descriptor instead.
 func (*Alert) Descriptor() ([]byte, []int) {
-	return file_sentinel_v1_alert_proto_rawDescGZIP(), []int{0}
+	return file_inch_v1_alert_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Alert) GetAlertId() string {
@@ -168,7 +168,7 @@ type AlertBatch struct {
 
 func (x *AlertBatch) Reset() {
 	*x = AlertBatch{}
-	mi := &file_sentinel_v1_alert_proto_msgTypes[1]
+	mi := &file_inch_v1_alert_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -180,7 +180,7 @@ func (x *AlertBatch) String() string {
 func (*AlertBatch) ProtoMessage() {}
 
 func (x *AlertBatch) ProtoReflect() protoreflect.Message {
-	mi := &file_sentinel_v1_alert_proto_msgTypes[1]
+	mi := &file_inch_v1_alert_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -193,7 +193,7 @@ func (x *AlertBatch) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AlertBatch.ProtoReflect.Descriptor instead.
 func (*AlertBatch) Descriptor() ([]byte, []int) {
-	return file_sentinel_v1_alert_proto_rawDescGZIP(), []int{1}
+	return file_inch_v1_alert_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *AlertBatch) GetAlerts() []*Alert {
@@ -203,67 +203,67 @@ func (x *AlertBatch) GetAlerts() []*Alert {
 	return nil
 }
 
-var File_sentinel_v1_alert_proto protoreflect.FileDescriptor
+var File_inch_v1_alert_proto protoreflect.FileDescriptor
 
-const file_sentinel_v1_alert_proto_rawDesc = "" +
+const file_inch_v1_alert_proto_rawDesc = "" +
 	"\n" +
-	"\x17sentinel/v1/alert.proto\x12\vsentinel.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17sentinel/v1/event.proto\"\xc5\x04\n" +
+	"\x13inch/v1/alert.proto\x12\ainch.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x13inch/v1/event.proto\"\xb9\x04\n" +
 	"\x05Alert\x12\x19\n" +
 	"\balert_id\x18\x01 \x01(\tR\aalertId\x12\x17\n" +
 	"\arule_id\x18\x02 \x01(\tR\x06ruleId\x12\x1b\n" +
-	"\trule_name\x18\x03 \x01(\tR\bruleName\x121\n" +
-	"\bseverity\x18\x04 \x01(\x0e2\x15.sentinel.v1.SeverityR\bseverity\x129\n" +
+	"\trule_name\x18\x03 \x01(\tR\bruleName\x12-\n" +
+	"\bseverity\x18\x04 \x01(\x0e2\x11.inch.v1.SeverityR\bseverity\x129\n" +
 	"\n" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12 \n" +
-	"\vdescription\x18\x06 \x01(\tR\vdescription\x12F\n" +
-	"\fgroup_values\x18\a \x03(\v2#.sentinel.v1.Alert.GroupValuesEntryR\vgroupValues\x12\x1f\n" +
+	"\vdescription\x18\x06 \x01(\tR\vdescription\x12B\n" +
+	"\fgroup_values\x18\a \x03(\v2\x1f.inch.v1.Alert.GroupValuesEntryR\vgroupValues\x12\x1f\n" +
 	"\vevent_count\x18\b \x01(\rR\n" +
 	"eventCount\x12\x1b\n" +
 	"\tevent_ids\x18\t \x03(\tR\beventIds\x12\x12\n" +
 	"\x04tags\x18\n" +
-	" \x03(\tR\x04tags\x12B\n" +
+	" \x03(\tR\x04tags\x12>\n" +
 	"\n" +
-	"enrichment\x18\v \x03(\v2\".sentinel.v1.Alert.EnrichmentEntryR\n" +
+	"enrichment\x18\v \x03(\v2\x1e.inch.v1.Alert.EnrichmentEntryR\n" +
 	"enrichment\x1a>\n" +
 	"\x10GroupValuesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a=\n" +
 	"\x0fEnrichmentEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"8\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"4\n" +
 	"\n" +
-	"AlertBatch\x12*\n" +
-	"\x06alerts\x18\x01 \x03(\v2\x12.sentinel.v1.AlertR\x06alertsB\xa4\x01\n" +
-	"\x0fcom.sentinel.v1B\n" +
-	"AlertProtoP\x01Z8github.com/AudreyRodrygo/Inch/gen/sentinel/v1;sentinelv1\xa2\x02\x03SXX\xaa\x02\vSentinel.V1\xca\x02\vSentinel\\V1\xe2\x02\x17Sentinel\\V1\\GPBMetadata\xea\x02\fSentinel::V1b\x06proto3"
+	"AlertBatch\x12&\n" +
+	"\x06alerts\x18\x01 \x03(\v2\x0e.inch.v1.AlertR\x06alertsB\x88\x01\n" +
+	"\vcom.inch.v1B\n" +
+	"AlertProtoP\x01Z0github.com/AudreyRodrygo/Inch/gen/inch/v1;inchv1\xa2\x02\x03IXX\xaa\x02\aInch.V1\xca\x02\aInch\\V1\xe2\x02\x13Inch\\V1\\GPBMetadata\xea\x02\bInch::V1b\x06proto3"
 
 var (
-	file_sentinel_v1_alert_proto_rawDescOnce sync.Once
-	file_sentinel_v1_alert_proto_rawDescData []byte
+	file_inch_v1_alert_proto_rawDescOnce sync.Once
+	file_inch_v1_alert_proto_rawDescData []byte
 )
 
-func file_sentinel_v1_alert_proto_rawDescGZIP() []byte {
-	file_sentinel_v1_alert_proto_rawDescOnce.Do(func() {
-		file_sentinel_v1_alert_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_sentinel_v1_alert_proto_rawDesc), len(file_sentinel_v1_alert_proto_rawDesc)))
+func file_inch_v1_alert_proto_rawDescGZIP() []byte {
+	file_inch_v1_alert_proto_rawDescOnce.Do(func() {
+		file_inch_v1_alert_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_inch_v1_alert_proto_rawDesc), len(file_inch_v1_alert_proto_rawDesc)))
 	})
-	return file_sentinel_v1_alert_proto_rawDescData
+	return file_inch_v1_alert_proto_rawDescData
 }
 
-var file_sentinel_v1_alert_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_sentinel_v1_alert_proto_goTypes = []any{
-	(*Alert)(nil),                 // 0: sentinel.v1.Alert
-	(*AlertBatch)(nil),            // 1: sentinel.v1.AlertBatch
-	nil,                           // 2: sentinel.v1.Alert.GroupValuesEntry
-	nil,                           // 3: sentinel.v1.Alert.EnrichmentEntry
-	(Severity)(0),                 // 4: sentinel.v1.Severity
+var file_inch_v1_alert_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_inch_v1_alert_proto_goTypes = []any{
+	(*Alert)(nil),                 // 0: inch.v1.Alert
+	(*AlertBatch)(nil),            // 1: inch.v1.AlertBatch
+	nil,                           // 2: inch.v1.Alert.GroupValuesEntry
+	nil,                           // 3: inch.v1.Alert.EnrichmentEntry
+	(Severity)(0),                 // 4: inch.v1.Severity
 	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
 }
-var file_sentinel_v1_alert_proto_depIdxs = []int32{
-	4, // 0: sentinel.v1.Alert.severity:type_name -> sentinel.v1.Severity
-	5, // 1: sentinel.v1.Alert.created_at:type_name -> google.protobuf.Timestamp
-	2, // 2: sentinel.v1.Alert.group_values:type_name -> sentinel.v1.Alert.GroupValuesEntry
-	3, // 3: sentinel.v1.Alert.enrichment:type_name -> sentinel.v1.Alert.EnrichmentEntry
-	0, // 4: sentinel.v1.AlertBatch.alerts:type_name -> sentinel.v1.Alert
+var file_inch_v1_alert_proto_depIdxs = []int32{
+	4, // 0: inch.v1.Alert.severity:type_name -> inch.v1.Severity
+	5, // 1: inch.v1.Alert.created_at:type_name -> google.protobuf.Timestamp
+	2, // 2: inch.v1.Alert.group_values:type_name -> inch.v1.Alert.GroupValuesEntry
+	3, // 3: inch.v1.Alert.enrichment:type_name -> inch.v1.Alert.EnrichmentEntry
+	0, // 4: inch.v1.AlertBatch.alerts:type_name -> inch.v1.Alert
 	5, // [5:5] is the sub-list for method output_type
 	5, // [5:5] is the sub-list for method input_type
 	5, // [5:5] is the sub-list for extension type_name
@@ -271,27 +271,27 @@ var file_sentinel_v1_alert_proto_depIdxs = []int32{
 	0, // [0:5] is the sub-list for field type_name
 }
 
-func init() { file_sentinel_v1_alert_proto_init() }
-func file_sentinel_v1_alert_proto_init() {
-	if File_sentinel_v1_alert_proto != nil {
+func init() { file_inch_v1_alert_proto_init() }
+func file_inch_v1_alert_proto_init() {
+	if File_inch_v1_alert_proto != nil {
 		return
 	}
-	file_sentinel_v1_event_proto_init()
+	file_inch_v1_event_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_sentinel_v1_alert_proto_rawDesc), len(file_sentinel_v1_alert_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_inch_v1_alert_proto_rawDesc), len(file_inch_v1_alert_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_sentinel_v1_alert_proto_goTypes,
-		DependencyIndexes: file_sentinel_v1_alert_proto_depIdxs,
-		MessageInfos:      file_sentinel_v1_alert_proto_msgTypes,
+		GoTypes:           file_inch_v1_alert_proto_goTypes,
+		DependencyIndexes: file_inch_v1_alert_proto_depIdxs,
+		MessageInfos:      file_inch_v1_alert_proto_msgTypes,
 	}.Build()
-	File_sentinel_v1_alert_proto = out.File
-	file_sentinel_v1_alert_proto_goTypes = nil
-	file_sentinel_v1_alert_proto_depIdxs = nil
+	File_inch_v1_alert_proto = out.File
+	file_inch_v1_alert_proto_goTypes = nil
+	file_inch_v1_alert_proto_depIdxs = nil
 }

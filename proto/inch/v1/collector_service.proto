@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package sentinel.v1;
+package inch.v1;
 
-option go_package = "sentinel/v1";
+option go_package = "inch/v1";
 
-import "sentinel/v1/event.proto";
+import "inch/v1/event.proto";
 
 // CollectorService receives security events from agents.
 service CollectorService {

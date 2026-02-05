@@ -4,15 +4,15 @@ services:
     image: postgres:16-alpine
     container_name: inch-postgres
     environment:
-      POSTGRES_USER: sentinel
-      POSTGRES_PASSWORD: sentinel
-      POSTGRES_DB: sentinel
+      POSTGRES_USER: inch
+      POSTGRES_PASSWORD: inch
+      POSTGRES_DB: inch
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U sentinel"]
+      test: ["CMD-SHELL", "pg_isready -U inch"]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -82,12 +82,17 @@ services:
       - "4317:4317"    # OTLP gRPC
       - "4318:4318"    # OTLP HTTP
 
+  # ─── Prometheus Pushgateway ─────────────────────────────────────────────────
+  pushgateway:
+    image: prom/pushgateway:v1.7.0
+    container_name: inch-pushgateway
+    ports:
+      - "9091:9091"
+
   # ─── Prometheus ─────────────────────────────────────────────────────────────
   prometheus:
     image: prom/prometheus:v2.51.0
     container_name: inch-prometheus
-    ports:
-      - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
@@ -100,11 +105,11 @@ services:
     image: grafana/grafana:10.4.0
     container_name: inch-grafana
     environment:
-      GF_SECURITY_ADMIN_PASSWORD: sentinel
+      GF_SECURITY_ADMIN_PASSWORD: inch
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
     ports:
-      - "3000:3000"
+      - "3001:3000"
     volumes:
       - grafana-data:/var/lib/grafana
 

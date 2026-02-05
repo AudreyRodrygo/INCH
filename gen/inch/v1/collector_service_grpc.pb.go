@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.1
 // - protoc             (unknown)
-// source: sentinel/v1/collector_service.proto
+// source: inch/v1/collector_service.proto
 
-package sentinelv1
+package inchv1
 
 import (
 	context "context"
@@ -19,8 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CollectorService_IngestEvents_FullMethodName = "/sentinel.v1.CollectorService/IngestEvents"
-	CollectorService_StreamEvents_FullMethodName = "/sentinel.v1.CollectorService/StreamEvents"
+	CollectorService_IngestEvents_FullMethodName = "/inch.v1.CollectorService/IngestEvents"
+	CollectorService_StreamEvents_FullMethodName = "/inch.v1.CollectorService/StreamEvents"
 )
 
 // CollectorServiceClient is the client API for CollectorService service.
@@ -142,7 +142,7 @@ type CollectorService_StreamEventsServer = grpc.BidiStreamingServer[EventBatch, 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var CollectorService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "sentinel.v1.CollectorService",
+	ServiceName: "inch.v1.CollectorService",
 	HandlerType: (*CollectorServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -158,5 +158,5 @@ var CollectorService_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "sentinel/v1/collector_service.proto",
+	Metadata: "inch/v1/collector_service.proto",
 }

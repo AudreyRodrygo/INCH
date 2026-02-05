@@ -17,11 +17,11 @@ func TestConfig_DSN(t *testing.T) { //nolint:gosec // G101: test credentials, no
 			cfg: postgres.Config{
 				Host:     "localhost",
 				Port:     5432,
-				Database: "sentinel",
-				User:     "sentinel",
-				Password: "sentinel",
+				Database: "inch",
+				User:     "inch",
+				Password: "inch",
 			},
-			want: "postgres://sentinel:sentinel@localhost:5432/sentinel",
+			want: "postgres://inch:inch@localhost:5432/inch",
 		},
 		{
 			name: "custom host and port",

@@ -1,4 +1,4 @@
-# Binaries
+# Binaries (compiled artifacts in repo root or bin/)
 *.exe
 *.exe~
 *.dll
@@ -6,11 +6,11 @@
 *.dylib
 bin/
 dist/
-event-collector
-event-processor
-alert-manager
-notification-dispatcher
-sentinel-agent
+/event-collector
+/event-processor
+/alert-manager
+/notification-dispatcher
+/inch-agent
 
 # Claude Code context file
 CLAUDE.md

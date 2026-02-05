@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 
-	pb "github.com/AudreyRodrygo/Inch/gen/sentinel/v1"
+	pb "github.com/AudreyRodrygo/Inch/gen/inch/v1"
 	"github.com/AudreyRodrygo/Inch/inch/internal/processor"
 	"github.com/AudreyRodrygo/Inch/inch/internal/processor/enrichment"
 	"github.com/AudreyRodrygo/Inch/inch/internal/processor/rules"
@@ -62,7 +62,7 @@ func run() error {
 	defer db.Close()
 
 	// Run migrations.
-	if migrateErr := postgres.Migrate(ctx, cfg.Postgres.DSN(), "sentinel/migrations"); migrateErr != nil {
+	if migrateErr := postgres.Migrate(ctx, cfg.Postgres.DSN(), "inch/migrations"); migrateErr != nil {
 		logger.Warn("migrations failed (may already be applied)", zap.Error(migrateErr))
 	}
 
@@ -80,7 +80,7 @@ func run() error {
 	)
 
 	// 8. Rule engine.
-	ruleList, ruleErr := rules.LoadFromDir("sentinel/rules")
+	ruleList, ruleErr := rules.LoadFromDir("inch/rules")
 	if ruleErr != nil {
 		logger.Warn("failed to load rules", zap.Error(ruleErr))
 	}

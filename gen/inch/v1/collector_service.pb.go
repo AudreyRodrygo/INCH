@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        (unknown)
-// source: sentinel/v1/collector_service.proto
+// source: inch/v1/collector_service.proto
 
-package sentinelv1
+package inchv1
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -30,7 +30,7 @@ type IngestEventsRequest struct {
 
 func (x *IngestEventsRequest) Reset() {
 	*x = IngestEventsRequest{}
-	mi := &file_sentinel_v1_collector_service_proto_msgTypes[0]
+	mi := &file_inch_v1_collector_service_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -42,7 +42,7 @@ func (x *IngestEventsRequest) String() string {
 func (*IngestEventsRequest) ProtoMessage() {}
 
 func (x *IngestEventsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sentinel_v1_collector_service_proto_msgTypes[0]
+	mi := &file_inch_v1_collector_service_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -55,7 +55,7 @@ func (x *IngestEventsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IngestEventsRequest.ProtoReflect.Descriptor instead.
 func (*IngestEventsRequest) Descriptor() ([]byte, []int) {
-	return file_sentinel_v1_collector_service_proto_rawDescGZIP(), []int{0}
+	return file_inch_v1_collector_service_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *IngestEventsRequest) GetBatch() *EventBatch {
@@ -79,7 +79,7 @@ type IngestEventsResponse struct {
 
 func (x *IngestEventsResponse) Reset() {
 	*x = IngestEventsResponse{}
-	mi := &file_sentinel_v1_collector_service_proto_msgTypes[1]
+	mi := &file_inch_v1_collector_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -91,7 +91,7 @@ func (x *IngestEventsResponse) String() string {
 func (*IngestEventsResponse) ProtoMessage() {}
 
 func (x *IngestEventsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sentinel_v1_collector_service_proto_msgTypes[1]
+	mi := &file_inch_v1_collector_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -104,7 +104,7 @@ func (x *IngestEventsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IngestEventsResponse.ProtoReflect.Descriptor instead.
 func (*IngestEventsResponse) Descriptor() ([]byte, []int) {
-	return file_sentinel_v1_collector_service_proto_rawDescGZIP(), []int{1}
+	return file_inch_v1_collector_service_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *IngestEventsResponse) GetAccepted() uint32 {
@@ -138,7 +138,7 @@ type RejectedEvent struct {
 
 func (x *RejectedEvent) Reset() {
 	*x = RejectedEvent{}
-	mi := &file_sentinel_v1_collector_service_proto_msgTypes[2]
+	mi := &file_inch_v1_collector_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -150,7 +150,7 @@ func (x *RejectedEvent) String() string {
 func (*RejectedEvent) ProtoMessage() {}
 
 func (x *RejectedEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_sentinel_v1_collector_service_proto_msgTypes[2]
+	mi := &file_inch_v1_collector_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -163,7 +163,7 @@ func (x *RejectedEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RejectedEvent.ProtoReflect.Descriptor instead.
 func (*RejectedEvent) Descriptor() ([]byte, []int) {
-	return file_sentinel_v1_collector_service_proto_rawDescGZIP(), []int{2}
+	return file_inch_v1_collector_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *RejectedEvent) GetEventId() string {
@@ -190,7 +190,7 @@ type StreamEventsResponse struct {
 
 func (x *StreamEventsResponse) Reset() {
 	*x = StreamEventsResponse{}
-	mi := &file_sentinel_v1_collector_service_proto_msgTypes[3]
+	mi := &file_inch_v1_collector_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -202,7 +202,7 @@ func (x *StreamEventsResponse) String() string {
 func (*StreamEventsResponse) ProtoMessage() {}
 
 func (x *StreamEventsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sentinel_v1_collector_service_proto_msgTypes[3]
+	mi := &file_inch_v1_collector_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -215,7 +215,7 @@ func (x *StreamEventsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamEventsResponse.ProtoReflect.Descriptor instead.
 func (*StreamEventsResponse) Descriptor() ([]byte, []int) {
-	return file_sentinel_v1_collector_service_proto_rawDescGZIP(), []int{3}
+	return file_inch_v1_collector_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *StreamEventsResponse) GetAccepted() uint32 {
@@ -232,55 +232,55 @@ func (x *StreamEventsResponse) GetRejected() uint32 {
 	return 0
 }
 
-var File_sentinel_v1_collector_service_proto protoreflect.FileDescriptor
+var File_inch_v1_collector_service_proto protoreflect.FileDescriptor
 
-const file_sentinel_v1_collector_service_proto_rawDesc = "" +
+const file_inch_v1_collector_service_proto_rawDesc = "" +
 	"\n" +
-	"#sentinel/v1/collector_service.proto\x12\vsentinel.v1\x1a\x17sentinel/v1/event.proto\"D\n" +
-	"\x13IngestEventsRequest\x12-\n" +
-	"\x05batch\x18\x01 \x01(\v2\x17.sentinel.v1.EventBatchR\x05batch\"\x93\x01\n" +
+	"\x1finch/v1/collector_service.proto\x12\ainch.v1\x1a\x13inch/v1/event.proto\"@\n" +
+	"\x13IngestEventsRequest\x12)\n" +
+	"\x05batch\x18\x01 \x01(\v2\x13.inch.v1.EventBatchR\x05batch\"\x8f\x01\n" +
 	"\x14IngestEventsResponse\x12\x1a\n" +
 	"\baccepted\x18\x01 \x01(\rR\baccepted\x12\x1a\n" +
-	"\brejected\x18\x02 \x01(\rR\brejected\x12C\n" +
-	"\x0frejected_events\x18\x03 \x03(\v2\x1a.sentinel.v1.RejectedEventR\x0erejectedEvents\"B\n" +
+	"\brejected\x18\x02 \x01(\rR\brejected\x12?\n" +
+	"\x0frejected_events\x18\x03 \x03(\v2\x16.inch.v1.RejectedEventR\x0erejectedEvents\"B\n" +
 	"\rRejectedEvent\x12\x19\n" +
 	"\bevent_id\x18\x01 \x01(\tR\aeventId\x12\x16\n" +
 	"\x06reason\x18\x02 \x01(\tR\x06reason\"N\n" +
 	"\x14StreamEventsResponse\x12\x1a\n" +
 	"\baccepted\x18\x01 \x01(\rR\baccepted\x12\x1a\n" +
-	"\brejected\x18\x02 \x01(\rR\brejected2\xb7\x01\n" +
-	"\x10CollectorService\x12S\n" +
-	"\fIngestEvents\x12 .sentinel.v1.IngestEventsRequest\x1a!.sentinel.v1.IngestEventsResponse\x12N\n" +
-	"\fStreamEvents\x12\x17.sentinel.v1.EventBatch\x1a!.sentinel.v1.StreamEventsResponse(\x010\x01B\xaf\x01\n" +
-	"\x0fcom.sentinel.v1B\x15CollectorServiceProtoP\x01Z8github.com/AudreyRodrygo/Inch/gen/sentinel/v1;sentinelv1\xa2\x02\x03SXX\xaa\x02\vSentinel.V1\xca\x02\vSentinel\\V1\xe2\x02\x17Sentinel\\V1\\GPBMetadata\xea\x02\fSentinel::V1b\x06proto3"
+	"\brejected\x18\x02 \x01(\rR\brejected2\xa7\x01\n" +
+	"\x10CollectorService\x12K\n" +
+	"\fIngestEvents\x12\x1c.inch.v1.IngestEventsRequest\x1a\x1d.inch.v1.IngestEventsResponse\x12F\n" +
+	"\fStreamEvents\x12\x13.inch.v1.EventBatch\x1a\x1d.inch.v1.StreamEventsResponse(\x010\x01B\x93\x01\n" +
+	"\vcom.inch.v1B\x15CollectorServiceProtoP\x01Z0github.com/AudreyRodrygo/Inch/gen/inch/v1;inchv1\xa2\x02\x03IXX\xaa\x02\aInch.V1\xca\x02\aInch\\V1\xe2\x02\x13Inch\\V1\\GPBMetadata\xea\x02\bInch::V1b\x06proto3"
 
 var (
-	file_sentinel_v1_collector_service_proto_rawDescOnce sync.Once
-	file_sentinel_v1_collector_service_proto_rawDescData []byte
+	file_inch_v1_collector_service_proto_rawDescOnce sync.Once
+	file_inch_v1_collector_service_proto_rawDescData []byte
 )
 
-func file_sentinel_v1_collector_service_proto_rawDescGZIP() []byte {
-	file_sentinel_v1_collector_service_proto_rawDescOnce.Do(func() {
-		file_sentinel_v1_collector_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_sentinel_v1_collector_service_proto_rawDesc), len(file_sentinel_v1_collector_service_proto_rawDesc)))
+func file_inch_v1_collector_service_proto_rawDescGZIP() []byte {
+	file_inch_v1_collector_service_proto_rawDescOnce.Do(func() {
+		file_inch_v1_collector_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_inch_v1_collector_service_proto_rawDesc), len(file_inch_v1_collector_service_proto_rawDesc)))
 	})
-	return file_sentinel_v1_collector_service_proto_rawDescData
+	return file_inch_v1_collector_service_proto_rawDescData
 }
 
-var file_sentinel_v1_collector_service_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_sentinel_v1_collector_service_proto_goTypes = []any{
-	(*IngestEventsRequest)(nil),  // 0: sentinel.v1.IngestEventsRequest
-	(*IngestEventsResponse)(nil), // 1: sentinel.v1.IngestEventsResponse
-	(*RejectedEvent)(nil),        // 2: sentinel.v1.RejectedEvent
-	(*StreamEventsResponse)(nil), // 3: sentinel.v1.StreamEventsResponse
-	(*EventBatch)(nil),           // 4: sentinel.v1.EventBatch
+var file_inch_v1_collector_service_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_inch_v1_collector_service_proto_goTypes = []any{
+	(*IngestEventsRequest)(nil),  // 0: inch.v1.IngestEventsRequest
+	(*IngestEventsResponse)(nil), // 1: inch.v1.IngestEventsResponse
+	(*RejectedEvent)(nil),        // 2: inch.v1.RejectedEvent
+	(*StreamEventsResponse)(nil), // 3: inch.v1.StreamEventsResponse
+	(*EventBatch)(nil),           // 4: inch.v1.EventBatch
 }
-var file_sentinel_v1_collector_service_proto_depIdxs = []int32{
-	4, // 0: sentinel.v1.IngestEventsRequest.batch:type_name -> sentinel.v1.EventBatch
-	2, // 1: sentinel.v1.IngestEventsResponse.rejected_events:type_name -> sentinel.v1.RejectedEvent
-	0, // 2: sentinel.v1.CollectorService.IngestEvents:input_type -> sentinel.v1.IngestEventsRequest
-	4, // 3: sentinel.v1.CollectorService.StreamEvents:input_type -> sentinel.v1.EventBatch
-	1, // 4: sentinel.v1.CollectorService.IngestEvents:output_type -> sentinel.v1.IngestEventsResponse
-	3, // 5: sentinel.v1.CollectorService.StreamEvents:output_type -> sentinel.v1.StreamEventsResponse
+var file_inch_v1_collector_service_proto_depIdxs = []int32{
+	4, // 0: inch.v1.IngestEventsRequest.batch:type_name -> inch.v1.EventBatch
+	2, // 1: inch.v1.IngestEventsResponse.rejected_events:type_name -> inch.v1.RejectedEvent
+	0, // 2: inch.v1.CollectorService.IngestEvents:input_type -> inch.v1.IngestEventsRequest
+	4, // 3: inch.v1.CollectorService.StreamEvents:input_type -> inch.v1.EventBatch
+	1, // 4: inch.v1.CollectorService.IngestEvents:output_type -> inch.v1.IngestEventsResponse
+	3, // 5: inch.v1.CollectorService.StreamEvents:output_type -> inch.v1.StreamEventsResponse
 	4, // [4:6] is the sub-list for method output_type
 	2, // [2:4] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
@@ -288,27 +288,27 @@ var file_sentinel_v1_collector_service_proto_depIdxs = []int32{
 	0, // [0:2] is the sub-list for field type_name
 }
 
-func init() { file_sentinel_v1_collector_service_proto_init() }
-func file_sentinel_v1_collector_service_proto_init() {
-	if File_sentinel_v1_collector_service_proto != nil {
+func init() { file_inch_v1_collector_service_proto_init() }
+func file_inch_v1_collector_service_proto_init() {
+	if File_inch_v1_collector_service_proto != nil {
 		return
 	}
-	file_sentinel_v1_event_proto_init()
+	file_inch_v1_event_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_sentinel_v1_collector_service_proto_rawDesc), len(file_sentinel_v1_collector_service_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_inch_v1_collector_service_proto_rawDesc), len(file_inch_v1_collector_service_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_sentinel_v1_collector_service_proto_goTypes,
-		DependencyIndexes: file_sentinel_v1_collector_service_proto_depIdxs,
-		MessageInfos:      file_sentinel_v1_collector_service_proto_msgTypes,
+		GoTypes:           file_inch_v1_collector_service_proto_goTypes,
+		DependencyIndexes: file_inch_v1_collector_service_proto_depIdxs,
+		MessageInfos:      file_inch_v1_collector_service_proto_msgTypes,
 	}.Build()
-	File_sentinel_v1_collector_service_proto = out.File
-	file_sentinel_v1_collector_service_proto_goTypes = nil
-	file_sentinel_v1_collector_service_proto_depIdxs = nil
+	File_inch_v1_collector_service_proto = out.File
+	file_inch_v1_collector_service_proto_goTypes = nil
+	file_inch_v1_collector_service_proto_depIdxs = nil
 }
