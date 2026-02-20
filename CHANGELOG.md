@@ -45,3 +45,4 @@ Development log — tracks feature additions as they were implemented.
 - 2025-12-19: feat(gateway): add delivery analytics aggregation
 - 2026-01-25: feat(processor): add prometheus histogram for processing latency
 - 2026-02-02: feat(agent): add health check endpoint to agent binary
+- 2026-02-20: feat(gateway): add pagination to analytics endpoint
