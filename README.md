@@ -63,7 +63,8 @@ Benchmarks run on Apple M4 (`go test -bench=. -benchmem -count=3`):
 | Circuit Breaker (closed state) | ~7.2M ops/sec | 138 ns/op | 0 |
 | Circuit Breaker (open state) | ~11M ops/sec | 91 ns/op | 0 |
 | Rate Limiter (token bucket) | ~4M ops/sec | 246 ns/op | 0 |
-| Priority Queue push+pop | ~51M ops/sec | 19.6 ns/op | 0 |
+| Priority Queue push | ~18M ops/sec | 56 ns/op | 0 |
+| Priority Queue push+pop | ~8.3M ops/sec | 121 ns/op | 0 |
 | Agent binary size | — | — | 13 MB |
 
 ## Tech Stack
