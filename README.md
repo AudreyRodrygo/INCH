@@ -1,7 +1,7 @@
 # INCH
 
 [![CI](https://github.com/AudreyRodrygo/INCH/actions/workflows/ci.yml/badge.svg)](https://github.com/AudreyRodrygo/INCH/actions/workflows/ci.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/AudreyRodrygo/Inch)](https://goreportcard.com/report/github.com/AudreyRodrygo/Inch)
+[![Go Report Card](https://goreportcard.com/badge/github.com/AudreyRodrygo/INCH)](https://goreportcard.com/report/github.com/AudreyRodrygo/INCH)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > Real-time security event processing platform. Cloud-native, streaming-first, open-source alternative to ELK and MaxPatrol.
