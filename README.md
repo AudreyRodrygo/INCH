@@ -12,28 +12,28 @@
 
 ```
   Host (DaemonSet)
- ┌─────────────────┐   gRPC + Protobuf    ┌──────────────────┐  Kafka: raw-events  ┌──────────────────────┐
- │   inch-agent    │ ──────────────────▶  │  event-collector │ ──────────────────▶ │   event-processor    │
- │   13 MB binary  │                      │  Redis dedup     │                     │   Worker pool        │
- └─────────────────┘                      └──────────────────┘                     │   GeoIP enrichment   │
+ ┌─────────────────┐   gRPC + Protobuf    ┌──────────────────┐  Kafka: raw-events   ┌──────────────────────┐
+ │   inch-agent    │ ──────────────────▶  │  event-collector │ ──────────────────▶  │   event-processor    │
+ │   13 MB binary  │                      │  Redis dedup     │                      │   Worker pool        │
+ └─────────────────┘                      └──────────────────┘                      │   GeoIP enrichment   │
                                                                                     │   Rule engine        │
                                                                                     │   Severity classify  │
                                                                                     └──────────┬───────────┘
                                                                                                │
-                                                                                    Kafka: alerts
+                                                                                         Kafka: alerts
                                                                                                │
                                                                                                ▼
-                                          ┌──────────────────────────────────────────────────────────────┐
-                                          │                      alert-manager                           │
-                                          │          Deduplication · Rate Limiter · Circuit Breaker      │
-                                          └──────────────────────────┬───────────────────────────────────┘
+                                           ┌──────────────────────────────────────────────────────────────┐
+                                           │                      alert-manager                           │
+                                           │          Deduplication · Rate Limiter · Circuit Breaker      │
+                                           └──────────────────────────┬───────────────────────────────────┘
                                                                       │
                                                                NATS JetStream
                                                                       │
                                                                       ▼
                                           ┌──────────────────────────────────────────────────────────────┐
-                                          │                 notification-dispatcher                       │
-                                          │   Webhook (HMAC) · Slack · Telegram · Email · DLQ + Retry   │
+                                          │                 notification-dispatcher                      │
+                                          │   Webhook (HMAC) · Slack · Telegram · Email · DLQ + Retry    │
                                           └──────────────────────────────────────────────────────────────┘
 
   Observability: Prometheus · Grafana · Jaeger (OTLP)       Replay: gateway-api (SSE) ──▶ Kafka offset seek
