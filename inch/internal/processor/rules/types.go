@@ -1,4 +1,4 @@
-// Package rules implements the Sentinel Correlation Rule Engine.
+// Package rules implements the INCH Correlation Rule Engine.
 //
 // The rule engine is the intellectual core of the platform. It evaluates
 // each incoming security event against a set of configurable rules

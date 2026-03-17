@@ -1,4 +1,4 @@
-// Package pkg contains shared libraries used by both Sentinel and Herald services.
+// Package pkg contains shared libraries used by all INCH services.
 //
 // Subpackages:
 //   - circuitbreaker: Circuit Breaker pattern implementation

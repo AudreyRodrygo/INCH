@@ -76,7 +76,7 @@ dispatcher:
   config:
     natsUrl: "nats://nats:4222"
 
-# ─── Sentinel Agent ─────────────────────────────────────────────────────────
+# ─── INCH Agent ─────────────────────────────────────────────────────────
 # Runs as DaemonSet — one instance per cluster node for host-level collection
 agent:
   image:

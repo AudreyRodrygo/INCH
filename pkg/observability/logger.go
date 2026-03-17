@@ -1,5 +1,5 @@
 // Package observability provides a unified setup for logging, metrics, and tracing
-// across all Sentinel and Herald services.
+// across all INCH services.
 //
 // Every service initializes observability once at startup:
 //

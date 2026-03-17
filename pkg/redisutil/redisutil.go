@@ -1,4 +1,4 @@
-// Package redisutil provides a Redis client factory for Sentinel and Herald services.
+// Package redisutil provides a Redis client factory for INCH services.
 //
 // Redis serves three purposes in our system:
 //   - Deduplication: SET NX with TTL to detect duplicate events

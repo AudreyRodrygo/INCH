@@ -1,4 +1,4 @@
-// Package config provides a unified configuration loader for all Sentinel and Herald services.
+// Package config provides a unified configuration loader for all INCH services.
 //
 // It follows the 12-Factor App methodology:
 //   - Default values are set in code (reasonable for development)

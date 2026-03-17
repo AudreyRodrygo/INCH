@@ -1,4 +1,4 @@
-// Package replay implements the Forensics Replay API for Sentinel.
+// Package replay implements the Forensics Replay API for INCH.
 //
 // Replay allows security analysts to re-run correlation rules against
 // historical events stored in Kafka. This is critical for incident

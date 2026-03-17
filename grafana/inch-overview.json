@@ -1,5 +1,7 @@
 {
-  "annotations": { "list": [] },
+  "annotations": {
+    "list": []
+  },
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
@@ -11,7 +13,10 @@
       "id": 1,
       "title": "Events Processed / sec",
       "type": "timeseries",
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "rate(events_processed_total[1m])",
@@ -19,13 +24,21 @@
           "refId": "A"
         }
       ],
-      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 }
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      }
     },
     {
       "id": 2,
       "title": "Processing Latency (P50 / P95 / P99)",
       "type": "timeseries",
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "histogram_quantile(0.50, rate(processing_latency_seconds_bucket[5m]))",
@@ -43,13 +56,21 @@
           "refId": "C"
         }
       ],
-      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 }
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      }
     },
     {
       "id": 3,
       "title": "Alerts Fired / min",
       "type": "stat",
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "rate(alerts_fired_total[1m]) * 60",
@@ -57,13 +78,21 @@
           "refId": "A"
         }
       ],
-      "gridPos": { "x": 0, "y": 8, "w": 8, "h": 6 }
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 8,
+        "h": 6
+      }
     },
     {
       "id": 4,
       "title": "Circuit Breaker State",
       "type": "stat",
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "description": "0=closed, 1=open, 2=half-open",
       "targets": [
         {
@@ -72,13 +101,21 @@
           "refId": "A"
         }
       ],
-      "gridPos": { "x": 8, "y": 8, "w": 8, "h": 6 }
+      "gridPos": {
+        "x": 8,
+        "y": 8,
+        "w": 8,
+        "h": 6
+      }
     },
     {
       "id": 5,
       "title": "Worker Pool Queue Depth",
       "type": "gauge",
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "worker_pool_queue_depth",
@@ -86,13 +123,21 @@
           "refId": "A"
         }
       ],
-      "gridPos": { "x": 16, "y": 8, "w": 8, "h": 6 }
+      "gridPos": {
+        "x": 16,
+        "y": 8,
+        "w": 8,
+        "h": 6
+      }
     },
     {
       "id": 6,
       "title": "Kafka Consumer Lag",
       "type": "timeseries",
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "targets": [
         {
           "expr": "kafka_consumer_lag",
@@ -100,17 +145,30 @@
           "refId": "A"
         }
       ],
-      "gridPos": { "x": 0, "y": 14, "w": 24, "h": 8 }
+      "gridPos": {
+        "x": 0,
+        "y": 14,
+        "w": 24,
+        "h": 8
+      }
     }
   ],
   "refresh": "",
   "schemaVersion": 39,
-  "tags": ["inch", "inch"],
-  "templating": { "list": [] },
-  "time": { "from": "now-1h", "to": "now" },
+  "tags": [
+    "inch",
+    "inch"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Sentinel Overview",
+  "title": "INCH Overview",
   "uid": "inch-overview",
   "version": 1,
   "weekStart": ""

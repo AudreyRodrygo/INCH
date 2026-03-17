@@ -17,7 +17,7 @@ import (
 //
 // The receiving server can verify the request is authentic by:
 //  1. Computing HMAC-SHA256 of the request body with the shared secret
-//  2. Comparing it to the X-Sentinel-Signature header
+//  2. Comparing it to the X-INCH-Signature header
 //
 // This is the same pattern used by GitHub webhooks, Stripe, etc.
 type Webhook struct {
@@ -44,8 +44,8 @@ func (w *Webhook) Name() string { return "webhook" }
 //
 // Headers:
 //   - Content-Type: application/json
-//   - X-Sentinel-Signature: HMAC-SHA256 hex digest
-//   - X-Sentinel-Event: alert
+//   - X-INCH-Signature: HMAC-SHA256 hex digest
+//   - X-INCH-Event: alert
 func (w *Webhook) Send(ctx context.Context, alert AlertPayload) error {
 	if w.url == "" {
 		return nil // Webhook not configured — skip silently.
@@ -62,12 +62,12 @@ func (w *Webhook) Send(ctx context.Context, alert AlertPayload) error {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-Sentinel-Event", "alert")
+	req.Header.Set("X-INCH-Event", "alert")
 
 	// Sign the payload with HMAC-SHA256.
 	if w.secret != "" {
 		signature := computeHMAC(body, []byte(w.secret))
-		req.Header.Set("X-Sentinel-Signature", "sha256="+signature)
+		req.Header.Set("X-INCH-Signature", "sha256="+signature)
 	}
 
 	resp, err := w.client.Do(req)
