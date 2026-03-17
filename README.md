@@ -11,8 +11,8 @@
 ## Architecture
 
 ```
-sentinel-agent  ──gRPC+Protobuf──▶  event-collector  ──Kafka(raw-events)──▶  event-processor
-   13MB binary                         Redis dedup                              Worker pool
+inch-agent  ──gRPC+Protobuf──▶  event-collector  ──Kafka(raw-events)──▶  event-processor
+  13 MB binary                      Redis dedup                              Worker pool
                                                                                 Rule engine
                                                                                 GeoIP + threat intel
                                                                                       │
@@ -48,7 +48,7 @@ sentinel-agent  ──gRPC+Protobuf──▶  event-collector  ──Kafka(raw-e
 | Criterion | ELK Stack | MaxPatrol / KUMA | INCH |
 |-----------|-----------|------------------|------|
 | Runtime | Java + JVM | Java / C# | Pure Go binary |
-| Agent memory | Filebeat: 100–300 MB | 150–500 MB | **<15 MB** |
+| Agent memory | Filebeat: 100–300 MB | 150–500 MB | **13 MB** |
 | Event → alert latency | seconds (batch) | 1–5s | **<100ms** |
 | Architecture | Monolith + plugins | Closed monolith | Microservices |
 | Deployment | Complex | Installer-based | **Kubernetes-first, Helm** |
@@ -144,7 +144,7 @@ make lint
 
 | Service | Port | Protocol | Description |
 |---------|------|----------|-------------|
-| sentinel-agent | — | gRPC client | Collects events from host (logs, processes, network) |
+| inch-agent | — | gRPC client | Collects events from host (logs, processes, network) |
 | event-collector | 50051 | gRPC | Receives events, dedup via Redis, publish to Kafka |
 | event-processor | 8082 | HTTP metrics | Enriches events, evaluates correlation rules, persists |
 | alert-manager | 8083 | HTTP metrics | Dedup + rate limit + circuit breaker + route alerts |
