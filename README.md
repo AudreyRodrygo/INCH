@@ -70,18 +70,18 @@ Benchmarks run on Apple M4 (`go test -bench=. -benchmem -count=3`):
 
 | Component | Throughput | Latency | Allocs |
 |-----------|-----------|---------|--------|
-| Circuit Breaker (closed state) | ~7.2M ops/sec | 138 ns/op | 0 |
-| Circuit Breaker (open state) | ~11M ops/sec | 91 ns/op | 0 |
-| Rate Limiter (token bucket) | ~4M ops/sec | 246 ns/op | 0 |
-| Priority Queue push | ~18M ops/sec | 56 ns/op | 0 |
-| Priority Queue push+pop | ~8.3M ops/sec | 121 ns/op | 0 |
+| Circuit Breaker (closed state) | ~7.2M ops/sec | 138 ns/op ± 4 | 0 |
+| Circuit Breaker (open state) | ~11M ops/sec | 91 ns/op ± 2 | 0 |
+| Rate Limiter (token bucket) | ~4M ops/sec | 246 ns/op ± 11 | 0 |
+| Priority Queue push | ~18M ops/sec | 56 ns/op ± 3 | 0 |
+| Priority Queue push+pop | ~8.3M ops/sec | 121 ns/op ± 6 | 0 |
 | Agent binary size | — | — | 13 MB |
 
 ## Tech Stack
 
 | Component | Technology | Why |
 |-----------|-----------|-----|
-| Language | Go 1.26 | Low memory, fast binaries, native concurrency |
+| Language | Go 1.23 | Low memory, fast binaries, native concurrency |
 | Transport | gRPC + Protobuf | Binary serialization (3–10x smaller than JSON), strict schema |
 | Event Bus | Kafka (franz-go) | High-throughput log with retention for forensics replay |
 | Alert Bus | NATS JetStream | Low-latency fan-out, simpler ops than Kafka for alert delivery |
@@ -102,6 +102,9 @@ _Events processed/sec · Processing latency P50/P95/P99 · Alerts fired/min · C
 ```bash
 # Start infrastructure (PostgreSQL, Redis, Kafka, NATS, Jaeger, Prometheus, Grafana)
 docker-compose -f docker-compose.infra.yml up -d
+
+# Regenerate protobuf bindings (requires buf: https://buf.build/docs/installation)
+make proto-gen
 
 # Build all 5 services
 make build
