@@ -1,6 +1,6 @@
 // Package processor implements the event-processor service.
 //
-// The processor is the brain of Sentinel — it reads raw events from Kafka,
+// The processor is the brain of the INCH pipeline — it reads raw events from Kafka,
 // enriches them (GeoIP, threat intel), evaluates correlation rules, classifies
 // severity, and persists the results to PostgreSQL.
 //

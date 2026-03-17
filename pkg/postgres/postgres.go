@@ -1,5 +1,5 @@
 // Package postgres provides a PostgreSQL connection pool factory and migration runner
-// for Sentinel and Herald services.
+// for INCH services.
 //
 // Each service creates a pool at startup:
 //

@@ -12,7 +12,7 @@ import (
 
 // Server implements the CollectorService gRPC interface.
 //
-// It is the first service in the Sentinel pipeline:
+// It is the first service in the INCH pipeline:
 //
 //	Agent → [Server.IngestEvents] → Redis dedup → Kafka publish
 //

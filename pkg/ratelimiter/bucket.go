@@ -6,8 +6,8 @@
 //   - The bucket has a maximum capacity (burst size)
 //   - If empty, operations are either rejected (Allow) or blocked (Wait)
 //
-// This is used in Sentinel's alert-manager (limit alerts per channel)
-// and Herald's gateway-api (limit requests per client).
+// This is used in INCH's alert-manager (limit alerts per channel)
+// and INCH's gateway-api (limit requests per client).
 //
 // The implementation is lock-free using atomic operations for performance
 // under high concurrency — critical for our 10k events/sec target.

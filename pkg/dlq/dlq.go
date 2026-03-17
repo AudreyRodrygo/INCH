@@ -5,7 +5,7 @@
 //   - Without DLQ: a poison message blocks the entire queue or is silently lost
 //   - With DLQ: the message is safely stored for later inspection and replay
 //
-// This package defines the interface (contract) that both Sentinel and Herald
+// This package defines the interface (contract) that all INCH services
 // use. The actual implementation depends on the underlying transport:
 //   - NATS JetStream: for alert delivery pipeline
 //   - Kafka: for event processing pipeline

@@ -1,121 +1,294 @@
-# Architecture & Design Decisions
+# INCH — Architecture & Design Decisions
 
-## System Overview
+## System Flow
 
-Sentinel + Herald is a two-project platform for real-time security event processing and intelligent notification delivery.
+```
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │  HOST LAYER                                                                  │
+  │  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐                    │
+  │  │  inch-agent  │   │  inch-agent  │   │  inch-agent  │   (DaemonSet)       │
+  │  │  tail logs   │   │  tail logs   │   │  tail logs   │                    │
+  │  │  watch procs │   │  watch procs │   │  watch procs │                    │
+  └──┴──────┬───────┴───┴──────┬───────┴───┴──────┬───────┴────────────────────┘
+            │  gRPC / proto3   │                  │
+            └──────────────────┼──────────────────┘
+                               │  StreamEvents RPC
+                               ▼
+  ┌────────────────────────────────────────────────────────────────────────────┐
+  │  INGESTION                                                                  │
+  │  ┌──────────────────────────────┐                                           │
+  │  │       event-collector        │  normalize → validate → enrich (basic)   │
+  │  └──────────────┬───────────────┘                                           │
+  └─────────────────┼──────────────────────────────────────────────────────────┘
+                    │  Kafka  →  topic: raw-events
+                    ▼
+  ┌────────────────────────────────────────────────────────────────────────────┐
+  │  PROCESSING                                                                 │
+  │  ┌──────────────────────────────┐                                           │
+  │  │       event-processor        │  GeoIP enrichment → severity scoring     │
+  │  │                              │  rule engine (single/threshold/sequence)  │
+  │  │   worker pool ──▶ rule DSL   │  hot reload via fsnotify                 │
+  │  └──────────────┬───────────────┘                                           │
+  └─────────────────┼──────────────────────────────────────────────────────────┘
+                    │  Kafka  →  topic: alerts
+                    ▼
+  ┌────────────────────────────────────────────────────────────────────────────┐
+  │  ALERT MANAGEMENT                                                           │
+  │  ┌──────────────────────────────┐                                           │
+  │  │        alert-manager         │  deduplication (Redis TTL windows)       │
+  │  │                              │  route by severity → NATS subjects       │
+  │  └──────────────┬───────────────┘                                           │
+  └─────────────────┼──────────────────────────────────────────────────────────┘
+                    │  NATS JetStream  →  subjects: alerts.critical / alerts.high / …
+                    ▼
+  ┌────────────────────────────────────────────────────────────────────────────┐
+  │  DELIVERY                                                                   │
+  │  ┌──────────────────────────────┐    ┌─────────────────────────────────┐   │
+  │  │  notification-dispatcher     │    │         gateway-api              │   │
+  │  │                              │    │  REST forensics replay           │   │
+  │  │  Email · Slack · Webhook     │    │  Kafka offset seek → SSE stream  │   │
+  │  │  Telegram                    │    │  delivery analytics              │   │
+  │  └──────────────────────────────┘    └─────────────────────────────────┘   │
+  └────────────────────────────────────────────────────────────────────────────┘
+```
 
-**Sentinel** processes the event pipeline: collection → enrichment → correlation → alerting.
-**Herald** handles notification delivery: prioritization → routing → multi-channel delivery.
+```
+  INFRASTRUCTURE
+  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐
+  │  PostgreSQL  │  │    Redis     │  │  Prometheus  │  │  Jaeger (OTLP)       │
+  │  alerts DB   │  │  dedup TTL   │  │  + Grafana   │  │  distributed traces  │
+  └──────────────┘  └──────────────┘  └──────────────┘  └──────────────────────┘
+```
 
-## Why Two Separate Projects?
+---
 
-Separation of concerns with different scaling profiles:
-- Sentinel processes 10k+ events/sec — CPU-bound, scales horizontally via Kafka partitions
-- Herald handles tens of notifications/sec — I/O-bound, scales by adding delivery channels
+## pkg/ — Shared Libraries
 
-Both share infrastructure libraries (`pkg/`) but have independent lifecycles.
+```
+  pkg/
+  ├── config          ─  Viper wrapper, env override, structured config structs
+  ├── observability   ─  zap logger + Prometheus registerer + OpenTelemetry tracer
+  ├── postgres        ─  pgx/v5 pool factory, migration runner (goose)
+  ├── redisutil       ─  go-redis/v9 client factory, health ping
+  ├── kafkautil       ─  franz-go producer/consumer builders, offset helpers
+  ├── natsutil        ─  NATS JetStream connect, stream/consumer provisioning
+  ├── dlq             ─  dead-letter queue: failed events → Kafka DLQ topic
+  ├── retry           ─  exponential backoff with jitter, context-aware
+  ├── ratelimiter     ─  token-bucket, zero-alloc, 4 M ops/sec
+  ├── circuitbreaker  ─  three-state CB, zero-alloc, 7.2 M ops/sec
+  └── health          ─  HTTP /healthz + /readyz handlers, checker registry
+```
+
+Every service depends only on the `pkg/` packages it needs. No service imports another service.
+
+---
 
 ## Key Design Decisions
 
-### 1. Kafka for Events, NATS for Alerts
+### 1. Why Two Brokers? Kafka for Events, NATS for Alerts
 
-**Problem**: Need a message broker between services. One size doesn't fit all.
+```
+  ┌─────────────────────────────────┬──────────────────────────────────────┐
+  │           KAFKA                 │           NATS JetStream             │
+  ├─────────────────────────────────┼──────────────────────────────────────┤
+  │  10 k+ events/sec ingestion     │  tens of alerts/sec                  │
+  │  7-day retention for replay     │  ephemeral — ack and done            │
+  │  ordered, partitioned log       │  low-latency fan-out                 │
+  │  horizontal scale via partitions│  simpler ops (no ZooKeeper/KRaft)    │
+  │  consumer groups for processing │  per-consumer subject filtering      │
+  └─────────────────────────────────┴──────────────────────────────────────┘
 
-**Decision**: Kafka for the event pipeline (collector → processor → alert-manager), NATS JetStream for alert delivery (alert-manager → dispatcher, gateway → delivery-worker).
+  Rule: use the right tool for the requirement, not the familiar one.
+  Kafka's retention makes forensics replay "free" — no extra storage.
+  NATS's simplicity reduces operational toil for the low-volume delivery layer.
+```
 
-**Rationale**:
-- Kafka excels at high-throughput ordered log with retention (needed for forensics replay)
-- NATS excels at low-latency fan-out with simpler ops (sufficient for alert volume)
-- Using both demonstrates the ability to choose tools by requirements, not by familiarity
+### 2. Custom Circuit Breaker & Rate Limiter
 
-### 2. Custom Circuit Breaker & Rate Limiter (No Libraries)
+```
+  Closed ──── failures < threshold ───▶ Closed
+    │                                      ▲
+    │ failures ≥ threshold                 │ probe success
+    ▼                                      │
+  Open ──────── timeout expires ─────▶ Half-Open
+    │                                      │
+    └──── probe fails ◀────────────────────┘
 
-**Problem**: Need fault tolerance patterns for downstream service protection.
+  ┌─────────────────────────────────────────────────────┐
+  │  circuit breaker   7.2 M ops/sec   zero allocation  │
+  │  rate limiter      4.0 M ops/sec   zero allocation  │
+  │  both integrate with Prometheus state/count metrics │
+  └─────────────────────────────────────────────────────┘
 
-**Decision**: Implement from scratch instead of using `sony/gobreaker` or `golang.org/x/time/rate`.
-
-**Rationale**:
-- Demonstrates deep understanding of the patterns (interview talking point)
-- Zero-allocation implementations: CB 7.7M ops/sec, RL 4M ops/sec
-- Tailored to our exact needs (Prometheus metrics integration, specific state callbacks)
+  Rationale: sony/gobreaker allocates on every call; golang.org/x/time/rate
+  lacks Prometheus hooks. Implementing from scratch demonstrates the pattern
+  deeply and removes a dependency with no added value.
+```
 
 ### 3. Worker Pool, Not Goroutine-Per-Event
 
-**Problem**: Processing 10k events/sec requires parallelism.
+```
+  Kafka partition
+       │
+       ▼
+  ┌─────────────────────────────────────────┐
+  │  consumer loop                          │
+  │       │                                 │
+  │       ▼                                 │
+  │  ┌─────────┐  bounded channel (N=256)   │
+  │  │ channel │◀── backpressure point      │
+  │  └────┬────┘                            │
+  │       │ dispatch                        │
+  │  ┌────▼──────────────────────────┐      │
+  │  │  worker  worker  worker  ...  │  ×W  │
+  │  └───────────────────────────────┘      │
+  └─────────────────────────────────────────┘
+       │ channel full → Kafka consumer.Pause()
+       ▼ channel drains → Kafka consumer.Resume()
 
-**Decision**: Fixed-size worker pool with bounded channel buffer.
+  Goroutine-per-event at 10 k/sec → 10 k goroutines → DB pool exhaustion.
+  Fixed pool → bounded memory, bounded DB connections, natural backpressure.
+```
 
-**Rationale**:
-- Goroutine-per-event at 10k/sec = 10k goroutines, unpredictable memory, DB connection exhaustion
-- Worker pool = bounded N workers, bounded N DB connections, natural backpressure
-- When the channel buffer fills, Kafka consumer pauses automatically (built-in backpressure)
+### 4. Protobuf + gRPC for Agent → Collector
 
-### 4. Protobuf + gRPC for Agent-to-Collector
+```
+  inch-agent                         event-collector
+  ┌──────────────────────┐           ┌─────────────────────────┐
+  │  proto3 SecurityEvent│──────────▶│  StreamEvents(stream)   │
+  │  binary wire format  │  HTTP/2   │  server-side streaming  │
+  └──────────────────────┘           └─────────────────────────┘
 
-**Problem**: Agent sends 10k events/sec to collector. Need efficient serialization.
+  JSON 1 event ≈ 850 B   →   Protobuf ≈ 120 B   (≈ 7× smaller)
+  Strict schema: breaking changes caught at proto compile time, not runtime.
+  HTTP/2 multiplexing: one TCP connection per agent, no head-of-line blocking.
+```
 
-**Decision**: Protocol Buffers over gRPC instead of JSON over REST.
+### 5. Custom Heap Priority Queue
 
-**Rationale**:
-- Protobuf is 3-10x smaller than JSON (no field names repeated)
-- Strict schema catches incompatible changes at compile time
-- gRPC over HTTP/2: multiplexing, header compression, bidirectional streaming
+```
+  inch/internal/gateway/priority/
 
-### 5. Heap-Based Priority Queue (Not `container/heap`)
+  Our API          vs.    container/heap
+  ────────────────────────────────────────
+  Push(item)              heap.Push(&h, item)
+  Pop() Item              heap.Pop(&h).(Item)
+  TryPop() (Item, bool)   — not available —
+  Len() int               len(h)
 
-**Problem**: Herald needs priority ordering with SLA enforcement.
+  121 ns/op push+pop   ·   FIFO ordering within equal priority (stable)
+  Used by gateway-api to prioritize forensics replay requests by severity.
+```
 
-**Decision**: Custom heap implementation in `herald/internal/gateway/priority/`.
+### 6. YAML Rule DSL with fsnotify Hot Reload
 
-**Rationale**:
-- Go's `container/heap` requires implementing a 5-method interface on a slice type — verbose
-- Our implementation is cleaner: `Push(Item)`, `Pop()`, `TryPop()`, `Len()`
-- Demonstrates algorithm knowledge: 17ns/op for push+pop
-- FIFO ordering within same priority (stable sort property)
+```yaml
+  # rules/brute_force.yaml
+  - id: brute-force-ssh
+    type: threshold        # single | threshold | sequence
+    condition: event.type == "auth_failure" && event.dst_port == 22
+    threshold: 5
+    window: 60s
+    severity: high
+```
 
-### 6. YAML Rule DSL with Hot Reload
-
-**Problem**: Security teams need to add/modify detection rules without deploying code.
-
-**Decision**: YAML-based rule language loaded from files, with fsnotify-based hot reload.
-
-**Rationale**:
-- YAML is human-readable and version-controllable (Git)
-- Three rule types cover most SIEM use cases: single, threshold, sequence
-- Hot reload via `sync.RWMutex` swap: zero-downtime rule updates
-- Rule validation at load time prevents silent misconfigurations
+```
+  fsnotify WRITE event
+        │
+        ▼
+  ┌─────────────────────────────┐
+  │  parse + validate rules     │
+  │  compile condition AST      │
+  │         │ success           │
+  │  sync.RWMutex.Lock()        │
+  │  swap active rule set       │
+  │  sync.RWMutex.Unlock()      │
+  └─────────────────────────────┘
+        │ zero-downtime, in-flight events use old snapshot
+```
 
 ### 7. Forensics Replay via Kafka Offset Seeking
 
-**Problem**: After an incident, analysts need to check "was this happening 3 days ago?"
+```
+  analyst                gateway-api              Kafka cluster
+     │                       │                         │
+     │  GET /replay?from=…    │                         │
+     │ ──────────────────────▶│                         │
+     │                        │  seek to timestamp      │
+     │                        │ ───────────────────────▶│
+     │                        │  replay consumer        │
+     │                        │◀─── raw-events ─────────│
+     │                        │  isolated rule engine   │
+     │  SSE stream            │  (no production state)  │
+     │◀──────────────────────-│                         │
 
-**Decision**: API that creates a temporary Kafka consumer, seeks to a timestamp, and replays through the rule engine.
+  7-day Kafka retention = free historical window.
+  Isolated consumer group = replay never affects live processing lag.
+  SSE = results stream to the browser as they are produced.
+```
 
-**Rationale**:
-- Kafka retains events for 7 days — replay is "free" (no additional storage)
-- Replay uses an isolated rule engine instance (doesn't affect production state)
-- SSE streaming provides real-time results to the analyst
-- This is a key differentiator vs ELK (which requires re-indexing for rule changes)
+---
 
 ## Concurrency Model
 
-Each service follows the same pattern:
-1. `main()` calls `run()` which returns an error
-2. `signal.NotifyContext` creates a context cancelled on SIGINT/SIGTERM
-3. Dependencies are initialized in order (config → logger → connections → business logic)
-4. Background goroutines are managed via `errgroup`
-5. Graceful shutdown: mark not-ready → drain in-flight → close connections
+```
+  main()
+    └── run(ctx)
+          ├── signal.NotifyContext(SIGINT, SIGTERM)  ← ctx cancelled on signal
+          ├── init: config → logger → DB/Redis/Kafka/NATS connections
+          ├── errgroup.WithContext(ctx)
+          │     ├── goroutine: Kafka consumer loop
+          │     ├── goroutine: worker pool supervisor
+          │     ├── goroutine: HTTP health server
+          │     └── goroutine: metrics server
+          └── g.Wait() → first non-nil error propagates, ctx cancelled for peers
+
+  Graceful shutdown order:
+    1. mark /readyz → 503  (stop receiving new traffic)
+    2. Kafka consumer stops polling
+    3. drain in-flight channel (workers finish current items)
+    4. flush Kafka producer (collector)
+    5. close DB/Redis/NATS connections
+    6. logger.Sync()
+```
+
+---
 
 ## Error Handling
 
-- All errors are wrapped with context: `fmt.Errorf("operation: %w", err)`
-- Infrastructure errors (DB down) → log + continue (don't crash the whole pipeline)
-- Business logic errors (bad event) → log + skip event + count in metrics
-- No panics in production code — panics only in `Must*` functions called from `main()`
+```
+  ┌───────────────────────────────────────────────────────────────────────┐
+  │  Layer              Strategy                                           │
+  ├───────────────────────────────────────────────────────────────────────┤
+  │  wrapping           fmt.Errorf("operation: %w", err)  — always        │
+  │  infrastructure     DB/broker down → log + metric + continue          │
+  │  business logic     bad event → log + skip + DLQ publish              │
+  │  fatal startup      Must*() helpers in main() — panic is acceptable   │
+  │  production code    never panic — return errors up the stack          │
+  └───────────────────────────────────────────────────────────────────────┘
+
+  Dead-letter queue (pkg/dlq): events that fail after retry exhaustion are
+  published to a Kafka DLQ topic for offline inspection, never silently dropped.
+```
+
+---
 
 ## Testing Strategy
 
-- **Unit tests**: table-driven, in same package (white-box)
-- **Benchmarks**: for algorithmic code (rule engine, circuit breaker, rate limiter, priority queue)
-- **Integration tests**: testcontainers (behind `//go:build integration` tag)
-- **Load tests**: k6 scripts in `loadtest/`
+```
+  ┌─────────────────┬────────────────────────────────────────────────────┐
+  │  Layer          │  Approach                                           │
+  ├─────────────────┼────────────────────────────────────────────────────┤
+  │  Unit           │  table-driven, same package (white-box)             │
+  │                 │  testify/assert + require                           │
+  ├─────────────────┼────────────────────────────────────────────────────┤
+  │  Benchmarks     │  rule engine, CB, RL, priority queue                │
+  │                 │  track ns/op and allocs/op in CI                    │
+  ├─────────────────┼────────────────────────────────────────────────────┤
+  │  Integration    │  testcontainers (Postgres, Redis, Kafka, NATS)      │
+  │                 │  //go:build integration  — skipped in normal CI     │
+  ├─────────────────┼────────────────────────────────────────────────────┤
+  │  Load           │  k6 scripts in loadtest/                            │
+  │                 │  target: 10 k events/sec sustained, p99 < 50 ms     │
+  └─────────────────┴────────────────────────────────────────────────────┘
+```

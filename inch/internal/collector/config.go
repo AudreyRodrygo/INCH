@@ -1,6 +1,6 @@
 // Package collector implements the event-collector service.
 //
-// The collector is the entry point for all security events in Sentinel.
+// The collector is the entry point for all security events in INCH.
 // It receives events from agents via gRPC, validates and deduplicates them,
 // then publishes to Kafka for downstream processing.
 //

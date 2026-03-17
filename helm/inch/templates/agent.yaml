@@ -1,5 +1,5 @@
 ---
-# Sentinel Agent runs as a DaemonSet: one pod per node for host-level event collection
+# INCH Agent runs as a DaemonSet: one pod per node for host-level event collection
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
